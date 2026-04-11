@@ -764,13 +764,17 @@ export default function Home() {
             toolCalls = [...toolCalls, { name: data.name, input: data.input || {} }];
           } else if (eventType === "artifact" && data.artifact_type) {
             // Deduplicate: skip if we already have this artifact type
-            if (data.artifact_type === "weld_diagnosis_result" &&
-                artifactBlocks.some(b => b.artifact.artifact_type === "weld_diagnosis_result")) {
+            const dedupTypes = ["weld_diagnosis_result", "machine_photo_annotation"];
+            if (dedupTypes.includes(data.artifact_type) &&
+                artifactBlocks.some(b => b.artifact.artifact_type === data.artifact_type)) {
               continue;
             }
             const artifactData = data.data || data;
-            // Inject the user's actual image into weld diagnosis artifacts
-            if (data.artifact_type === "weld_diagnosis_result" && imageDataUrl) {
+            // Inject the user's actual image into photo-based artifacts
+            if (imageDataUrl && (
+              data.artifact_type === "weld_diagnosis_result" ||
+              data.artifact_type === "machine_photo_annotation"
+            )) {
               artifactData.user_image_url = imageDataUrl;
             }
             const payload: ArtifactPayload = {

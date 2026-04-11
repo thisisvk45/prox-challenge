@@ -175,6 +175,37 @@ export const TOOL_DEFINITIONS: Anthropic.Messages.Tool[] = [
     },
   },
   {
+    name: "annotate_machine_photo",
+    description:
+      "Annotate a photo of the Vulcan OmniPro 220 machine (front panel, interior, wire feed, back panel). Overlays numbered pins on identified components. Call this ONLY for machine photos, NOT for weld photos.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        view_type: {
+          type: "string",
+          enum: ["front_panel", "interior", "wire_feed", "back_panel", "general"],
+          description: "Which part of the machine is shown in the photo",
+        },
+        regions_of_interest: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              label: { type: "string", description: "Component name, e.g. 'Voltage knob'" },
+              x_percent: { type: "number", description: "Horizontal position as % of image width (0-100)" },
+              y_percent: { type: "number", description: "Vertical position as % of image height (0-100)" },
+              description: { type: "string", description: "One-sentence description of what this component does" },
+              manual_page: { type: "number", description: "Page number in the manual where this part is documented" },
+            },
+            required: ["label", "x_percent", "y_percent", "description", "manual_page"],
+          },
+          description: "Array of identified components with their positions in the photo",
+        },
+      },
+      required: ["view_type", "regions_of_interest"],
+    },
+  },
+  {
     name: "render_artifact",
     description:
       "Return structured data for the frontend to render as an interactive artifact. Use for duty cycle calculators, polarity diagrams, troubleshooting flowcharts, comparison tables, weld diagnosis results, etc.",
@@ -195,6 +226,7 @@ export const TOOL_DEFINITIONS: Anthropic.Messages.Tool[] = [
             "spec_table",
             "procedure_checklist",
             "weld_diagnosis_result",
+            "machine_photo_annotation",
           ],
         },
         title: { type: "string", description: "Display title for the artifact" },
@@ -568,6 +600,55 @@ export async function handleToolCall(
       }
 
       return contentBlocks;
+    }
+
+    case "annotate_machine_photo": {
+      const viewType = (input.view_type as string) || "general";
+      const regions = (input.regions_of_interest as any[]) || [];
+
+      // Guard: reject weld photos that were misrouted
+      const weldWords = ["weld", "bead", "porosity", "spatter", "burn-through", "undercut", "slag"];
+      const labelText = regions.map(r => r.label.toLowerCase()).join(" ");
+      if (weldWords.some(w => labelText.includes(w))) {
+        return JSON.stringify({
+          error: "This appears to be a weld photo, not a machine photo. Use diagnose_weld_photo instead.",
+        });
+      }
+
+      // Map manual pages to image filenames
+      const MANUAL_DIR = join(process.cwd(), "public", "manual-images");
+      const annotations = regions.map((r, i) => {
+        const page = r.manual_page as number;
+        // Find matching manual image file for this page number
+        let manualImageUrl: string | undefined;
+        try {
+          const files = require("fs").readdirSync(MANUAL_DIR) as string[];
+          const match = files.find((f: string) => {
+            const m = f.match(/owner_p(\d+)/);
+            return m && parseInt(m[1]) === page;
+          });
+          if (match) manualImageUrl = `/manual-images/${match}`;
+        } catch {}
+
+        return {
+          id: i + 1,
+          label: r.label,
+          x_percent: Math.max(0, Math.min(100, r.x_percent)),
+          y_percent: Math.max(0, Math.min(100, r.y_percent)),
+          description: r.description,
+          manual_page: page,
+          manual_image_url: manualImageUrl,
+        };
+      });
+
+      console.log(`[annotate_machine_photo] view=${viewType}, regions=${annotations.length}`);
+      annotations.forEach(a => console.log(`  [${a.id}] ${a.label} @ (${a.x_percent}%, ${a.y_percent}%) → p${a.manual_page}`));
+
+      return JSON.stringify({
+        view_type: viewType,
+        annotations,
+        note: "The machine_photo_annotation artifact will be auto-rendered. Provide text explanation of the identified components.",
+      }, null, 2);
     }
 
     case "render_artifact": {

@@ -6,6 +6,7 @@ import { TroubleshootingFlowchart } from "./artifacts/TroubleshootingFlowchart";
 import { SettingsConfigurator } from "./artifacts/SettingsConfigurator";
 import { SelectionMatrix } from "./artifacts/SelectionMatrix";
 import { WeldDiagnosisResult } from "./artifacts/WeldDiagnosisResult";
+import { MachinePhotoAnnotation } from "./artifacts/MachinePhotoAnnotation";
 import { Badge } from "./ui/badge";
 
 export type ArtifactPayload = {
@@ -73,6 +74,15 @@ export function ArtifactRenderer({ artifact }: { artifact: ArtifactPayload }) {
           secondary_match={data.secondary_match as any}
           manual_image_url={data.manual_image_url as string | undefined}
           weld_type={(data.weld_type as "wire" | "stick") || "wire"}
+        />
+      );
+
+    case "machine_photo_annotation":
+      return (
+        <MachinePhotoAnnotation
+          user_image_url={data.user_image_url as string}
+          view_type={(data.view_type as string) || "general"}
+          annotations={(data.annotations as any[]) || []}
         />
       );
 

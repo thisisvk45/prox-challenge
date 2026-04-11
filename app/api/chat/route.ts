@@ -46,13 +46,16 @@ export async function POST(request: Request) {
         const textParts: string[] = [];
         if (image) {
           textParts.push(
-            "The user has attached a photo of a weld. Analyze it visually, then call the diagnose_weld_photo tool to match against the manual's weld diagnosis library."
+            "The user has attached a photo. It could be a weld photo OR a photo of the welding machine itself. Look at it carefully:\n" +
+            "- If it shows a WELD BEAD (metal joint, bead pattern, spatter): use diagnose_weld_photo.\n" +
+            "- If it shows the WELDING MACHINE (front panel, controls, knobs, interior, wire feed): use annotate_machine_photo.\n" +
+            "- If the user's message gives context, follow that. Otherwise, determine from the image."
           );
         }
         if (message) {
           textParts.push(message);
         } else if (image) {
-          textParts.push("What's wrong with this weld? Diagnose it.");
+          textParts.push("What am I looking at? Analyze this photo.");
         }
 
         userContent.push({ type: "text", text: textParts.join("\n\n") });
@@ -159,6 +162,24 @@ export async function POST(request: Request) {
                           secondary_match: parsed.matches[1] || null,
                           manual_image_url: parsed.manual_reference_image,
                           weld_type: parsed.weld_type,
+                          user_image_url: "",
+                        },
+                      });
+                    }
+                  } catch { /* non-fatal */ }
+                }
+
+                // Auto-emit machine photo annotation artifact
+                if (tu.name === "annotate_machine_photo") {
+                  try {
+                    const parsed = JSON.parse(textContent);
+                    if (parsed.annotations && parsed.annotations.length > 0) {
+                      send("artifact", {
+                        artifact_type: "machine_photo_annotation",
+                        title: "Machine Annotation",
+                        data: {
+                          view_type: parsed.view_type,
+                          annotations: parsed.annotations,
                           user_image_url: "",
                         },
                       });

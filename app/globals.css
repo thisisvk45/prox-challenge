@@ -162,6 +162,16 @@
   animation: pulse-cursor 1s ease-in-out infinite;
 }
 
+/* Pin entrance animation for machine annotation */
+@keyframes pin-in {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+  60% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+.animate-pin-in {
+  animation: pin-in 0.4s ease-out both;
+}
+
 /* Markdown prose styles for dark theme */
 .prose-chat {
   @apply text-sm leading-relaxed;
