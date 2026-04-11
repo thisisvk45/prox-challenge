@@ -28,7 +28,11 @@ function polarity() { return _polarity ??= loadJson("polarity.json"); }
 function troubleshooting() { return (_troubleshooting ??= loadJson("troubleshooting.json")).entries as any[]; }
 function imageIndex() { return (_imageIndex ??= loadJson("image_index.json")).topics as Record<string, any>; }
 function selectionChart() { return _selectionChart ??= loadJson("selection_chart_extracted.json"); }
-function weldDiagnosis() { return _weldDiagnosis ??= loadJson("weld_diagnosis_extracted.json"); }
+function weldDiagnosis() {
+  // Always re-read in dev; in production the serverless function cold-starts fresh anyway
+  if (process.env.NODE_ENV === "development") return loadJson("weld_diagnosis_extracted.json");
+  return _weldDiagnosis ??= loadJson("weld_diagnosis_extracted.json");
+}
 function setupProcedures() { return _setupProcedures ??= loadJson("setup_procedures.json"); }
 
 // --- Anthropic API tool definitions ---
@@ -396,9 +400,13 @@ export async function handleToolCall(
       const data = diagnosis[key];
       if (!data) return JSON.stringify({ error: "No diagnosis data for " + weldType });
 
+      console.log("[diagnose_weld_photo] weld_type:", weldType);
+      console.log("[diagnose_weld_photo] visible_characteristics:", JSON.stringify(chars));
+
       // Exact-name boost map: characteristic keywords → defect name
       const DEFECT_BOOSTS: Record<string, string[]> = {
         "porosity": ["porosity"], "porous": ["porosity"], "pores": ["porosity"], "pinhole": ["porosity"],
+        "holes": ["porosity"], "cavities": ["porosity"], "gas pockets": ["porosity"],
         "spatter": ["spatter"], "splatter": ["spatter"],
         "burn-through": ["burn_through"], "burn through": ["burn_through"], "burnthrough": ["burn_through"],
         "undercut": ["undercut"],
@@ -449,17 +457,18 @@ export async function handleToolCall(
         }
       }
 
-      // Score defects — 1.5x multiplier + exact-name boosts
+      // Score defects — 3x multiplier + exact-name boosts (+200)
       for (const def of data.defects || []) {
         let score = scoreText(def.visual_description || "", def.name || "");
-        // 1.5x multiplier for defects over scenarios
-        score = Math.round(score * 1.5);
+        // 3x multiplier for defects over scenarios
+        score = Math.round(score * 3);
         // Exact-name boost: if any visible characteristic maps to this defect
         const defName = (def.name || "").toLowerCase();
         for (const cl of charsLower) {
           for (const [keyword, targets] of Object.entries(DEFECT_BOOSTS)) {
             if (cl.includes(keyword) && targets.includes(defName)) {
-              score += 50;
+              score += 200;
+              console.log(`[diagnose_weld_photo] BOOST +200: "${cl}" matched keyword "${keyword}" → defect "${defName}"`);
             }
           }
         }
@@ -474,6 +483,8 @@ export async function handleToolCall(
           });
         }
       }
+
+      console.log("[diagnose_weld_photo] candidates:", candidates.map(c => `${c.label}=${c.score}(${c.match_type})`).join(", "));
 
       // Sort by score descending
       candidates.sort((a, b) => b.score - a.score);
@@ -494,8 +505,8 @@ export async function handleToolCall(
 
       // Manual page reference
       const manualPage = weldType === "wire"
-        ? "/manual-images/owner_p35.png"
-        : "/manual-images/owner_p38.png";
+        ? "/manual-images/owner_p35_wire_weld_diagnosis.png"
+        : "/manual-images/owner_p38_stick_weld_diagnosis.png";
 
       return JSON.stringify({
         matches: top2,

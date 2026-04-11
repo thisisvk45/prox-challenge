@@ -101,6 +101,26 @@
     ],
     "defects": [
       {
+        "name": "porosity",
+        "visual_description": "Small round holes, pits, or cavities visible on or within the weld bead surface, may appear as scattered pinholes or clustered gas pockets, porous texture",
+        "causes": [
+          "Insufficient shielding gas flow or coverage",
+          "Contaminated base metal (oil, rust, moisture)",
+          "Wrong gas type or mixture",
+          "CTWD too long allowing air entrainment",
+          "Drafty environment blowing gas away",
+          "Damp or contaminated wire"
+        ],
+        "corrections": [
+          "Increase shielding gas flow (15-25 CFH)",
+          "Clean base metal thoroughly before welding",
+          "Check gas hose for leaks",
+          "Reduce CTWD to 3/8 - 1/2 inch",
+          "Shield weld area from drafts",
+          "Use dry, clean wire"
+        ]
+      },
+      {
         "name": "spatter",
         "visual_description": "Small dark circular spots scattered around weld bead area, varying in size from pinpoint to larger droplets",
         "causes": [
