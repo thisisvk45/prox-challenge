@@ -171,7 +171,7 @@ const renderArtifact = tool(
   "render_artifact",
   "Return structured data for the frontend to render as an interactive artifact. Use for duty cycle calculators, polarity diagrams, troubleshooting flowcharts, comparison tables, etc.",
   {
-    artifact_type: z.enum(["duty_cycle_calculator", "polarity_diagram", "troubleshooting_flow", "comparison_table", "spec_table", "procedure_checklist"]),
+    artifact_type: z.enum(["duty_cycle_calculator", "front_panel_polarity", "polarity_diagram", "troubleshooting_flow", "troubleshooting_flowchart", "settings_configurator", "selection_matrix", "comparison_table", "spec_table", "procedure_checklist"]),
     title: z.string().describe("Display title for the artifact"),
     data: z.record(z.string(), z.unknown()).describe("Structured data payload for the frontend to render"),
   },

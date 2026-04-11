@@ -1,17 +1,18 @@
-import { query } from "@anthropic-ai/claude-agent-sdk";
-import { createKbMcpServer } from "../../../lib/tools";
+import Anthropic from "@anthropic-ai/sdk";
+import { TOOL_DEFINITIONS, handleToolCall } from "../../../lib/api-tools";
 import { SYSTEM_PROMPT } from "../../../lib/system-prompt";
 
-export const maxDuration = 120; // seconds
+export const maxDuration = 120;
 
 export async function POST(request: Request) {
-  const { message } = await request.json();
+  const body = await request.json();
+  const { message, image } = body as { message?: string; image?: string };
 
-  if (!message || typeof message !== "string") {
-    return Response.json({ error: "Missing 'message' field" }, { status: 400 });
+  if (!message && !image) {
+    return Response.json({ error: "Missing 'message' or 'image' field" }, { status: 400 });
   }
 
-  const mcpServer = createKbMcpServer();
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -24,53 +25,138 @@ export async function POST(request: Request) {
       }
 
       try {
-        const conversation = query({
-          prompt: message,
-          options: {
-            model: "claude-sonnet-4-20250514",
-            systemPrompt: SYSTEM_PROMPT,
-            tools: [],
-            mcpServers: { "omnipro-kb": mcpServer },
-            allowedTools: [
-              "mcp__omnipro-kb__lookup_spec",
-              "mcp__omnipro-kb__lookup_duty_cycle",
-              "mcp__omnipro-kb__lookup_polarity",
-              "mcp__omnipro-kb__lookup_troubleshooting",
-              "mcp__omnipro-kb__get_manual_image",
-              "mcp__omnipro-kb__lookup_selection_chart",
-              "mcp__omnipro-kb__lookup_weld_diagnosis",
-              "mcp__omnipro-kb__search_procedures",
-              "mcp__omnipro-kb__render_artifact",
-            ],
-            maxTurns: 12,
-            permissionMode: "bypassPermissions",
-            allowDangerouslySkipPermissions: true,
-            env: {
-              ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
-              PATH: process.env.PATH,
-            },
-          },
-        });
+        // Build user content — text + optional image
+        const userContent: Anthropic.Messages.ContentBlockParam[] = [];
 
-        for await (const msg of conversation) {
-          if (msg.type === "assistant") {
-            // Full assistant message with content blocks
-            const textBlocks = msg.message.content.filter(
-              (b: any) => b.type === "text"
-            );
-            for (const block of textBlocks) {
-              send("text", { text: (block as any).text });
-            }
-          } else if (msg.type === "result") {
-            send("result", {
-              result: msg.subtype === "success" ? (msg as any).result : null,
-              cost_usd: msg.subtype === "success" ? (msg as any).total_cost_usd : null,
-              turns: msg.subtype === "success" ? (msg as any).num_turns : null,
-              error: msg.subtype !== "success" ? (msg as any).error : null,
+        if (image && typeof image === "string") {
+          // Parse data URL: data:image/jpeg;base64,/9j/4AAQ...
+          const match = image.match(/^data:(image\/\w+);base64,(.+)$/);
+          if (match) {
+            userContent.push({
+              type: "image",
+              source: {
+                type: "base64",
+                media_type: match[1] as "image/jpeg" | "image/png" | "image/gif" | "image/webp",
+                data: match[2],
+              },
             });
           }
         }
 
+        const textParts: string[] = [];
+        if (image) {
+          textParts.push(
+            "The user has attached a photo of a weld. Analyze it visually, then call the diagnose_weld_photo tool to match against the manual's weld diagnosis library."
+          );
+        }
+        if (message) {
+          textParts.push(message);
+        } else if (image) {
+          textParts.push("What's wrong with this weld? Diagnose it.");
+        }
+
+        userContent.push({ type: "text", text: textParts.join("\n\n") });
+
+        const messages: Anthropic.Messages.MessageParam[] = [
+          { role: "user", content: userContent },
+        ];
+
+        let turns = 0;
+        const maxTurns = 12;
+        let totalInputTokens = 0;
+        let totalOutputTokens = 0;
+        let totalToolCalls = 0;
+        const startMs = Date.now();
+
+        while (turns < maxTurns) {
+          turns++;
+
+          const response = await client.messages.create({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 8192,
+            system: SYSTEM_PROMPT,
+            tools: TOOL_DEFINITIONS,
+            messages,
+          });
+
+          // Accumulate usage
+          totalInputTokens += response.usage?.input_tokens || 0;
+          totalOutputTokens += response.usage?.output_tokens || 0;
+
+          // Emit text blocks and collect tool uses
+          const toolUses: Array<{
+            id: string;
+            name: string;
+            input: Record<string, unknown>;
+          }> = [];
+
+          for (const block of response.content) {
+            if (block.type === "text") {
+              send("text", { text: block.text });
+            } else if (block.type === "tool_use") {
+              const toolName = block.name;
+              send("tool_call", { name: toolName, input: block.input });
+              totalToolCalls++;
+              toolUses.push({
+                id: block.id,
+                name: block.name,
+                input: block.input as Record<string, unknown>,
+              });
+            }
+          }
+
+          // If no tool calls, we're done
+          if (response.stop_reason !== "tool_use" || toolUses.length === 0) {
+            break;
+          }
+
+          // Execute all tool calls and build tool results
+          const toolResults: Anthropic.Messages.ToolResultBlockParam[] =
+            await Promise.all(
+              toolUses.map(async (tu) => {
+                const result = await handleToolCall(tu.name, tu.input);
+
+                // Emit dedicated artifact event when render_artifact executes
+                if (tu.name === "render_artifact") {
+                  try {
+                    const parsed = JSON.parse(result);
+                    if (parsed.artifact) {
+                      send("artifact", {
+                        artifact_type: parsed.artifact.type,
+                        title: parsed.artifact.title,
+                        data: parsed.artifact.data,
+                      });
+                    }
+                  } catch {
+                    // fallback: emit from tool input directly
+                    send("artifact", {
+                      artifact_type: tu.input.artifact_type,
+                      title: tu.input.title,
+                      data: tu.input.data,
+                    });
+                  }
+                }
+
+                return {
+                  type: "tool_result" as const,
+                  tool_use_id: tu.id,
+                  content: result,
+                };
+              })
+            );
+
+          // Append assistant message and tool results for next turn
+          messages.push({ role: "assistant", content: response.content });
+          messages.push({ role: "user", content: toolResults });
+        }
+
+        // Sonnet 4.5 pricing: $3/M input, $15/M output
+        const costUsd = (totalInputTokens * 3 + totalOutputTokens * 15) / 1_000_000;
+        send("stats", {
+          cost_usd: Math.round(costUsd * 10000) / 10000,
+          elapsed_ms: Date.now() - startMs,
+          tool_call_count: totalToolCalls,
+        });
         send("done", {});
       } catch (err: any) {
         send("error", { error: err.message || "Unknown error" });
