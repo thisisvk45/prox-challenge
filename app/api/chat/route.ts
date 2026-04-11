@@ -116,10 +116,17 @@ export async function POST(request: Request) {
               toolUses.map(async (tu) => {
                 const result = await handleToolCall(tu.name, tu.input);
 
+                // Determine text content for event emission
+                // result is either a string or an array of content blocks
+                const isMultiModal = Array.isArray(result);
+                const textContent = isMultiModal
+                  ? (result.find((b: any) => b.type === "text") as any)?.text || ""
+                  : result;
+
                 // Emit dedicated artifact event when render_artifact executes
                 if (tu.name === "render_artifact") {
                   try {
-                    const parsed = JSON.parse(result);
+                    const parsed = JSON.parse(textContent);
                     if (parsed.artifact) {
                       send("artifact", {
                         artifact_type: parsed.artifact.type,
@@ -142,7 +149,7 @@ export async function POST(request: Request) {
                 // render_artifact in a separate turn
                 if (tu.name === "diagnose_weld_photo") {
                   try {
-                    const parsed = JSON.parse(result);
+                    const parsed = JSON.parse(textContent);
                     if (parsed.matches && parsed.matches.length > 0) {
                       send("artifact", {
                         artifact_type: "weld_diagnosis_result",
@@ -159,11 +166,13 @@ export async function POST(request: Request) {
                   } catch { /* non-fatal */ }
                 }
 
+                // For multi-modal results (content block arrays), pass as
+                // structured content so Anthropic receives image blocks as vision input
                 return {
                   type: "tool_result" as const,
                   tool_use_id: tu.id,
-                  content: result,
-                };
+                  content: isMultiModal ? result : textContent,
+                } as Anthropic.Messages.ToolResultBlockParam;
               })
             );
 

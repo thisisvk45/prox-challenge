@@ -210,10 +210,19 @@ export const TOOL_DEFINITIONS: Anthropic.Messages.Tool[] = [
 
 // --- Tool dispatcher ---
 
+// Content block types for multi-modal tool results
+type ToolContentBlock =
+  | { type: "text"; text: string }
+  | { type: "image"; source: { type: "base64"; media_type: "image/png" | "image/jpeg"; data: string } };
+
+/**
+ * Handle a tool call. Returns either a plain string (text-only result)
+ * or an array of content blocks (mixed text + images for vision).
+ */
 export async function handleToolCall(
   name: string,
   input: Record<string, unknown>
-): Promise<string> {
+): Promise<string | ToolContentBlock[]> {
   switch (name) {
     case "lookup_spec": {
       const s = specs();
@@ -508,12 +517,57 @@ export async function handleToolCall(
         ? "/manual-images/owner_p35_wire_weld_diagnosis.png"
         : "/manual-images/owner_p38_stick_weld_diagnosis.png";
 
-      return JSON.stringify({
-        matches: top2,
-        manual_reference_image: manualPage,
-        weld_type: weldType,
-        note: "The weld_diagnosis_result artifact has been auto-rendered for the user. Provide your text analysis based on these matches — do NOT call render_artifact for this diagnosis.",
-      }, null, 2);
+      // Build multi-modal tool result: text + manual chart images
+      const IMAGE_DIR = join(process.cwd(), "public");
+      const contentBlocks: ToolContentBlock[] = [];
+
+      // Text block with structured match data
+      contentBlocks.push({
+        type: "text",
+        text: JSON.stringify({
+          matches: top2,
+          manual_reference_image: manualPage,
+          weld_type: weldType,
+          note: "The weld_diagnosis_result artifact has been auto-rendered for the user. Provide your text analysis based on these matches — do NOT call render_artifact for this diagnosis. You can SEE the manual reference charts below — use them for visual comparison.",
+        }, null, 2),
+      });
+
+      // Embed manual chart images (cap at 3 total)
+      const chartFiles: string[] = [];
+      if (weldType === "wire") {
+        chartFiles.push("manual-images/owner_p35_wire_weld_diagnosis.png");
+      } else if (weldType === "stick") {
+        chartFiles.push("manual-images/owner_p38_stick_weld_diagnosis.png");
+      } else {
+        // Unknown — include both
+        chartFiles.push("manual-images/owner_p35_wire_weld_diagnosis.png");
+        chartFiles.push("manual-images/owner_p38_stick_weld_diagnosis.png");
+      }
+      // Also include the defect-specific page if different from main chart
+      const defectPages: Record<string, string> = {
+        wire: "manual-images/owner_p37_wire_porosity_spatter_burn.png",
+        stick: "manual-images/owner_p40_stick_porosity_spatter_burn.png",
+      };
+      const defectPage = defectPages[weldType];
+      if (defectPage && chartFiles.length < 3) {
+        chartFiles.push(defectPage);
+      }
+
+      for (const file of chartFiles.slice(0, 3)) {
+        try {
+          const imgBuf = readFileSync(join(IMAGE_DIR, file));
+          const b64 = imgBuf.toString("base64");
+          contentBlocks.push({
+            type: "image",
+            source: { type: "base64", media_type: "image/png", data: b64 },
+          });
+          console.log(`[diagnose_weld_photo] embedded image: ${file} (${Math.round(b64.length / 1024)}KB base64)`);
+        } catch (err) {
+          console.error(`[diagnose_weld_photo] failed to read image ${file}:`, err);
+        }
+      }
+
+      return contentBlocks;
     }
 
     case "render_artifact": {
