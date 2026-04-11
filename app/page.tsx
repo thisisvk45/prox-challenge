@@ -763,6 +763,11 @@ export default function Home() {
           } else if (eventType === "tool_call") {
             toolCalls = [...toolCalls, { name: data.name, input: data.input || {} }];
           } else if (eventType === "artifact" && data.artifact_type) {
+            // Deduplicate: skip if we already have this artifact type
+            if (data.artifact_type === "weld_diagnosis_result" &&
+                artifactBlocks.some(b => b.artifact.artifact_type === "weld_diagnosis_result")) {
+              continue;
+            }
             const artifactData = data.data || data;
             // Inject the user's actual image into weld diagnosis artifacts
             if (data.artifact_type === "weld_diagnosis_result" && imageDataUrl) {

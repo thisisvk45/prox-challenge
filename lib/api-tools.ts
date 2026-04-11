@@ -501,7 +501,7 @@ export async function handleToolCall(
         matches: top2,
         manual_reference_image: manualPage,
         weld_type: weldType,
-        instruction: "Now call render_artifact with artifact_type='weld_diagnosis_result' to display the diagnosis. Include user_image_url from the conversation context, the top_match and secondary_match from these results, and the manual_image_url.",
+        note: "The weld_diagnosis_result artifact has been auto-rendered for the user. Provide your text analysis based on these matches — do NOT call render_artifact for this diagnosis.",
       }, null, 2);
     }
 

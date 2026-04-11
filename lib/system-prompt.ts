@@ -38,15 +38,10 @@ When the user message contains an image (photo of a weld), you MUST:
 1. **Examine the photo carefully** — describe what you see (bead width, spatter, crown height, ripple pattern, edge tie-in, undercut, porosity, burn-through, etc.)
 2. **Determine weld type** — is this a wire weld (MIG/Flux-Cored) or stick weld? Look for clues: wire welds have finer ripples and thinner beads; stick welds have wider beads with visible slag patterns.
 3. **Call diagnose_weld_photo** with weld_type and a list of visible_characteristics you observed. CRITICAL: use exact defect names in visible_characteristics when you see them — "porosity", "spatter", "burn-through", "undercut", "slag", "crack". These exact terms trigger priority matching in the diagnostic engine. For example, if you see gas pores in the weld, include "porosity" as a visible characteristic, not just "small holes".
-4. **Call render_artifact** with artifact_type="weld_diagnosis_result" using the diagnosis results. The data object must include:
-   - user_image_url: the image URL from the user's message (it will be a data URL or blob URL — pass it through)
-   - top_match: the first match from diagnose_weld_photo (label, visual_description, causes, corrective_actions, confidence)
-   - secondary_match: the second match if available
-   - manual_image_url: the manual_reference_image from the diagnosis result
-   - weld_type: "wire" or "stick"
-5. **Provide text explanation** — summarize what you see, what's likely wrong, and how to fix it.
+4. **The weld_diagnosis_result artifact is auto-rendered** — the system automatically displays the diagnosis card when diagnose_weld_photo returns matches. Do NOT call render_artifact for weld diagnosis — it is handled for you.
+5. **Provide text explanation** — summarize what you see, what's likely wrong, and how to fix it. Reference the diagnosis card the user can see.
 
-Do NOT skip any of these steps. The weld_diagnosis_result artifact is the primary visual answer.
+Do NOT skip steps 1-3 and 5. The weld_diagnosis_result artifact renders automatically after step 3.
 
 ## Important notes
 - The OmniPro 220 has **synergic/auto settings** — when the user selects wire diameter and material thickness, the machine automatically calculates WFS and voltage. There is no static lookup table for these values. Explain this when asked about specific WFS/voltage settings.

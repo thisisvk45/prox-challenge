@@ -137,6 +137,28 @@ export async function POST(request: Request) {
                   }
                 }
 
+                // Auto-emit weld diagnosis artifact when diagnose_weld_photo
+                // returns matches — eliminates dependence on model calling
+                // render_artifact in a separate turn
+                if (tu.name === "diagnose_weld_photo") {
+                  try {
+                    const parsed = JSON.parse(result);
+                    if (parsed.matches && parsed.matches.length > 0) {
+                      send("artifact", {
+                        artifact_type: "weld_diagnosis_result",
+                        title: "Weld Diagnosis",
+                        data: {
+                          top_match: parsed.matches[0],
+                          secondary_match: parsed.matches[1] || null,
+                          manual_image_url: parsed.manual_reference_image,
+                          weld_type: parsed.weld_type,
+                          user_image_url: "",
+                        },
+                      });
+                    }
+                  } catch { /* non-fatal */ }
+                }
+
                 return {
                   type: "tool_result" as const,
                   tool_use_id: tu.id,
