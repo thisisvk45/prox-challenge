@@ -1,0 +1,108 @@
+{
+  "description": "Duty cycle = number of minutes in a 10-minute period a welder can produce at a given amperage without overheating. E.g., 40% at 100A means 4 min welding, 6 min rest.",
+  "thermal_protection": "Welder has internal thermal protection. It auto-shuts down when overheated and shows a warning on the LCD Display. It automatically returns to service after cooling.",
+  "duty_cycles": [
+    {
+      "process": "MIG",
+      "voltage": "120VAC",
+      "amperage": 100,
+      "duty_cycle_percent": 40,
+      "weld_minutes": 4.0,
+      "rest_minutes": 6.0
+    },
+    {
+      "process": "MIG",
+      "voltage": "120VAC",
+      "amperage": 75,
+      "duty_cycle_percent": 100,
+      "weld_minutes": 10.0,
+      "rest_minutes": 0.0,
+      "note": "100% continuous use"
+    },
+    {
+      "process": "MIG",
+      "voltage": "240VAC",
+      "amperage": 200,
+      "duty_cycle_percent": 25,
+      "weld_minutes": 2.5,
+      "rest_minutes": 7.5
+    },
+    {
+      "process": "MIG",
+      "voltage": "240VAC",
+      "amperage": 115,
+      "duty_cycle_percent": 100,
+      "weld_minutes": 10.0,
+      "rest_minutes": 0.0,
+      "note": "100% continuous use"
+    },
+    {
+      "process": "TIG",
+      "voltage": "120VAC",
+      "amperage": 125,
+      "duty_cycle_percent": 40,
+      "weld_minutes": 4.0,
+      "rest_minutes": 6.0
+    },
+    {
+      "process": "TIG",
+      "voltage": "120VAC",
+      "amperage": 90,
+      "duty_cycle_percent": 100,
+      "weld_minutes": 10.0,
+      "rest_minutes": 0.0,
+      "note": "100% continuous use"
+    },
+    {
+      "process": "TIG",
+      "voltage": "240VAC",
+      "amperage": 175,
+      "duty_cycle_percent": 30,
+      "weld_minutes": 3.0,
+      "rest_minutes": 7.0
+    },
+    {
+      "process": "TIG",
+      "voltage": "240VAC",
+      "amperage": 105,
+      "duty_cycle_percent": 100,
+      "weld_minutes": 10.0,
+      "rest_minutes": 0.0,
+      "note": "100% continuous use"
+    },
+    {
+      "process": "Stick",
+      "voltage": "120VAC",
+      "amperage": 80,
+      "duty_cycle_percent": 40,
+      "weld_minutes": 4.0,
+      "rest_minutes": 6.0
+    },
+    {
+      "process": "Stick",
+      "voltage": "120VAC",
+      "amperage": 60,
+      "duty_cycle_percent": 100,
+      "weld_minutes": 10.0,
+      "rest_minutes": 0.0,
+      "note": "100% continuous use"
+    },
+    {
+      "process": "Stick",
+      "voltage": "240VAC",
+      "amperage": 175,
+      "duty_cycle_percent": 25,
+      "weld_minutes": 2.5,
+      "rest_minutes": 7.5
+    },
+    {
+      "process": "Stick",
+      "voltage": "240VAC",
+      "amperage": 100,
+      "duty_cycle_percent": 100,
+      "weld_minutes": 10.0,
+      "rest_minutes": 0.0,
+      "note": "100% continuous use"
+    }
+  ]
+}

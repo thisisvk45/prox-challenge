@@ -1,0 +1,125 @@
+{
+  "source": "product-inside.webp — Settings Chart on inside of welder door — extracted via visual inspection",
+  "navigation": {
+    "step_1": "Press Home button",
+    "step_2": "Turn Main Knob until desired process appears on screen",
+    "step_3": "Press Main Knob to select desired process",
+    "step_4": "Follow Settings below for selected process",
+    "note": "Press Main Knob to go to next screen. Press Back button to return to previous screen.",
+    "controls": {
+      "left_knob": "Left Knob — adjusts left-side parameter (wire diameter, rod diameter, electrode diameter, amperage)",
+      "main_control_knob": "Main Control Knob (center) — scrolls through menus, press to select",
+      "right_knob": "Right Knob — adjusts right-side parameter (material thickness, voltage, ON/OFF)"
+    }
+  },
+  "rated_duty_cycles": {
+    "description": "For 10 Continuous Minutes",
+    "mig_flux": {
+      "120VAC": [
+        {"duty_cycle_percent": 40, "at_amperage": 100},
+        {"duty_cycle_percent": 100, "at_amperage": 75, "note": "Continuous use"}
+      ],
+      "240VAC": [
+        {"duty_cycle_percent": 25, "at_amperage": 200},
+        {"duty_cycle_percent": 100, "at_amperage": 115, "note": "Continuous use"}
+      ]
+    },
+    "tig": {
+      "120VAC": [
+        {"duty_cycle_percent": 40, "at_amperage": 125},
+        {"duty_cycle_percent": 100, "at_amperage": 90, "note": "Continuous use"}
+      ],
+      "240VAC": [
+        {"duty_cycle_percent": 30, "at_amperage": 175},
+        {"duty_cycle_percent": 100, "at_amperage": 105, "note": "Continuous use"}
+      ]
+    },
+    "stick": {
+      "120VAC": [
+        {"duty_cycle_percent": 40, "at_amperage": 80},
+        {"duty_cycle_percent": 100, "at_amperage": 60, "note": "Continuous use"}
+      ],
+      "240VAC": [
+        {"duty_cycle_percent": 25, "at_amperage": 175},
+        {"duty_cycle_percent": 100, "at_amperage": 100, "note": "Continuous use"}
+      ]
+    }
+  },
+  "mig_flux_settings": {
+    "step_1_polarity_gas": {
+      "description": "Plug cables in according to screen. Connect gas according to screen. Set SCFH between 20-30.",
+      "lcd_shows": "Polarity diagram and gas type (e.g., Stainless Tri-Mix)"
+    },
+    "step_2_wire_material": {
+      "description": "Turn Left Knob to set wire diameter. Turn Right Knob to set material thickness.",
+      "lcd_shows": "Wire diameter (e.g., .025\") and Material thickness (e.g., 24Ga)"
+    },
+    "step_3_auto_weld": {
+      "description": "Turn Left Knob to adjust Wire Feed Speed (Amperage). Turn Right Knob to adjust Voltage.",
+      "lcd_shows": "WFS in/min (e.g., 121), Voltage (e.g., 13.8V), Process, Gas Type, Wire Diameter, Material Thickness, Run-In WFS, Inductance, Spot Timer",
+      "note": "If WFS or Voltage are manually adjusted, white mark shows recommended setting"
+    },
+    "optional_settings": ["Run-In WFS", "Inductance", "Spot Timer", "Recall Setting", "Save Setting"]
+  },
+  "tig_settings": {
+    "step_1_polarity_gas": {
+      "description": "Plug cables in according to screen. Connect gas according to screen. Set SCFH between 10-25.",
+      "gas": "100% Argon"
+    },
+    "step_2_rod_material": {
+      "description": "Turn Left Knob to set rod diameter. Turn Right Knob to set material thickness.",
+      "lcd_shows": "Rod diameter (e.g., 1/16\") and Material thickness (e.g., 24Ga)"
+    },
+    "step_3_auto_weld": {
+      "description": "Turn Left Knob to adjust output amperage. Turn Right Knob to ON to energize TIG Torch.",
+      "lcd_shows": "Amperage (e.g., 30A), ON/OFF status, Process (TIG with Pedal), Gas Type (100% Ar), Rod Diameter, Material Thickness",
+      "warning": "Welder is now energized and Open Circuit Voltage is present"
+    },
+    "optional_settings": ["Recall Setting", "Save Setting"]
+  },
+  "stick_settings": {
+    "step_1_polarity": {
+      "description": "Plug cables in according to screen. No Gas Required.",
+      "lcd_shows": "Polarity diagram"
+    },
+    "step_2_electrode": {
+      "description": "Turn Main Control Knob to set electrode type.",
+      "lcd_shows": "Electrode type (e.g., 60xx)"
+    },
+    "step_3_diameter_material": {
+      "description": "Turn Left Knob to set electrode diameter. Turn Right Knob to set material thickness.",
+      "lcd_shows": "Electrode diameter (e.g., 3/32\") and Material thickness (e.g., 16Ga)"
+    },
+    "step_4_auto_weld": {
+      "description": "Turn Left Knob to adjust output amperage. Turn Right Knob to ON to energize Electrode Holder.",
+      "lcd_shows": "Amperage (e.g., 60A), ON/OFF status, Process (Stick), Electrode Type (70XX), Electrode Diameter (3/32\"), Material Thickness (16Ga), Hot Start, Arc Force",
+      "warning": "Welder is now energized and Open Circuit Voltage is present"
+    },
+    "optional_settings": ["Hot Start", "Arc Force", "Recall Setting", "Save Setting"]
+  },
+  "wire_spool_setup": {
+    "2_lb_spool": [
+      "Remove Wingnut and Spacer",
+      "Place Spool over Spindle against Brake Pad",
+      "Wire must unwind clockwise",
+      "Replace Spacer and secure with Wingnut"
+    ],
+    "10_12_lb_spool": [
+      "Remove Wingnut and Spacer",
+      "Place Spool Adapter over Spindle",
+      "Place Wire Spool over Adapter (line up pin)",
+      "Wire must unwind clockwise",
+      "Replace Spacer, secure with Wingnut",
+      "Screw Knob into Adapter"
+    ]
+  },
+  "wire_feed_setup": [
+    "Release wire tensioner by turning Feed Tensioner knob counterclockwise",
+    "Ensure wire diameter matches roller size — Solid: V-groove, Flux-cored: knurled groove",
+    "While holding wire securely, cut the end of wire, ensuring flat and no burrs",
+    "Feed at least 12\" of wire into Wire Inlet Liner",
+    "Lock Wire Arm down, swing Feed Tensioner to latch",
+    "Set Tension: Solid wire 3-5, Flux-Cored 2-3",
+    "Wire feeds for 3 seconds when Cold Wire Feed switch is pressed"
+  ]
+}

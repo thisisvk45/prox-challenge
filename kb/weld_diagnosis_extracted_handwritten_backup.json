@@ -1,0 +1,250 @@
+{
+  "source": "Owner's Manual pages 35-40 — extracted via visual inspection of weld diagnosis photos and diagrams",
+  "wire_weld_diagnosis": {
+    "source_pages": [35, 36, 37],
+    "penetration": {
+      "inadequate": {
+        "visual_description": "Cross-section shows weld bead sitting on top of the joint with minimal fusion into the base metal. The weld does not penetrate the joint fully — just on the surface.",
+        "cause": "Not hot enough",
+        "corrections_to_increase_heat": [
+          "Increase weld current",
+          "Decrease travel speed",
+          "Use faster wire feed",
+          "Use shorter CTWD"
+        ]
+      },
+      "proper": {
+        "visual_description": "Cross-section shows weld bead with good fusion into both sides of the joint. Weld is visible underneath and bulges slightly on top. Ideal penetration profile.",
+        "cause": "Ideal heat"
+      },
+      "excess_burn_through": {
+        "visual_description": "Cross-section shows weld drooping on top and underneath, or falling through entirely making a hole. Excessive fusion has melted through the base material.",
+        "cause": "Too hot",
+        "corrections_to_reduce_heat": [
+          "Decrease weld current",
+          "Increase travel speed",
+          "Use slower wire feed",
+          "Use longer CTWD"
+        ]
+      }
+    },
+    "example_welds": [
+      {
+        "name": "Good Weld",
+        "visual_description": "Smooth, consistent bead with uniform ripple pattern. Even width throughout. Good fusion at edges (toes) with no undercut. Bead profile is slightly convex with smooth transitions to base metal.",
+        "cause": null,
+        "correction": null
+      },
+      {
+        "name": "Voltage Too Low or Wire Feed Too Slow",
+        "visual_description": "Tall, narrow, ropey bead that sits high on the surface. Poor wetting at the edges — bead does not spread out. Pronounced ripple pattern with deep valleys. May have a lumpy, piled-up appearance.",
+        "cause": "Insufficient voltage or wire feed speed — not enough heat to properly wet the base metal",
+        "correction": "Increase Output Voltage or Increase Wire Feed Speed"
+      },
+      {
+        "name": "Voltage Too High or Wire Feed Too Fast",
+        "visual_description": "Wide, flat bead with excessive spatter (small dots scattered around the weld). Irregular edges. May have porosity (small holes). The weld appears spread out and thin with poor definition.",
+        "cause": "Excessive voltage or wire feed speed — too much heat causing spatter and poor bead control",
+        "correction": "Decrease Output Voltage or Decrease Wire Feed Speed"
+      },
+      {
+        "name": "Travel Speed Too Fast",
+        "visual_description": "Thin, narrow, stringy bead with an elongated appearance. Insufficient fill — the bead looks starved. Poor penetration visible in cross-section. The bead may have a convex, pointed profile.",
+        "cause": "Moving the gun too fast — not enough filler material deposited per unit length",
+        "correction": "Travel slower — reduce travel speed"
+      },
+      {
+        "name": "Travel Speed Too Slow",
+        "visual_description": "Wide, thick, heavily built-up bead with excessive fill. May have a convex, humped profile. Excessive heat input can cause distortion. Bead appears overwelded and wasteful.",
+        "cause": "Moving the gun too slowly — too much filler material deposited",
+        "correction": "Travel faster — increase travel speed"
+      },
+      {
+        "name": "CTWD Too Long or Wrong Polarity",
+        "visual_description": "Irregular bead with heavy spatter (large scattered droplets surrounding the weld). Poor bead definition. Porosity (holes/cavities) visible. The weld looks messy and inconsistent.",
+        "cause": "Contact Tip to Work Distance is too far, or polarity is incorrect for the process (should be DCEP for MIG, DCEN for Flux-Cored)",
+        "correction": "Check Polarity and maintain less than 1/2\" CTWD"
+      }
+    ],
+    "defects": {
+      "porosity": {
+        "visual_description": "Small cavities or holes scattered throughout the weld bead, visible as small round pits on the surface. Like tiny bubbles frozen in metal.",
+        "causes": [
+          "Incorrect polarity — check DCEP for MIG, DCEN for Flux-Cored",
+          "Insufficient shielding gas (MIG only) — increase flow, clean nozzle, check for leaks",
+          "Incorrect shielding gas (MIG only) — use gas recommended by wire supplier",
+          "Dirty workpiece or welding wire — clean to bare metal, ensure wire is free of rust/residues",
+          "Inconsistent travel speed — maintain steady travel speed",
+          "CTWD too long — reduce CTWD"
+        ]
+      },
+      "excessive_spatter": {
+        "visual_description": "Grainy, large droplets of metal scattered around the weld bead. Fine spatter is normal, but large, rough spatter that clings to the workpiece is a problem.",
+        "causes": [
+          "Dirty workpiece or welding wire — clean to bare metal",
+          "Incorrect polarity — check DCEP for MIG, DCEN for Flux-Cored",
+          "Insufficient shielding gas (MIG only) — increase flow, clean nozzle, maintain proper CTWD",
+          "Wire feeding too fast — reduce wire feed speed",
+          "CTWD too long — reduce CTWD"
+        ]
+      },
+      "crooked_wavy_bead": {
+        "visual_description": "Bead wanders left and right instead of following a straight line. Inconsistent width and direction.",
+        "causes": [
+          "Inaccurate welding — use two hands or rest hand on steady surface",
+          "Inconsistent travel speed — maintain steady weld speed",
+          "CTWD too long — reduce CTWD"
+        ]
+      },
+      "burn_through": {
+        "visual_description": "Base material melts away leaving a hole in the weld. Visible as a gap or opening where the metal has been completely consumed.",
+        "causes": [
+          "Workpiece overheating — reduce current and/or wire feed speed",
+          "Travel speed too slow — increase travel speed and keep it steady",
+          "Excessive material at weld — reduce wire feed speed"
+        ]
+      },
+      "weld_not_adhering": {
+        "visual_description": "Gaps present between weld and previous bead or between weld and workpiece. The weld bead appears to sit on the surface without proper fusion.",
+        "causes": [
+          "Incorrect welding technique — place stringer bead at correct place in joint, keep arc on leading edge of puddle",
+          "Insufficient weld heat — increase current, increase wire feed speed",
+          "Dirty workpiece — clean to bare metal",
+          "Insufficient weld material — increase wire feed speed",
+          "Workpiece gap too narrow — widen groove or increase bevel"
+        ]
+      },
+      "bend_at_joint": {
+        "visual_description": "Weld bead appears to angle or bend at the joint area rather than following the intended weld path.",
+        "causes": [
+          "Improper clamping — clamp workpieces securely, use tack welds",
+          "Excessive heat — weld small portion at a time, increase travel speed, reduce wire feed speed"
+        ]
+      },
+      "coat_of_slag": {
+        "visual_description": "Dark, crusty coating covering the weld bead. When partially chipped away, reveals the actual weld underneath.",
+        "note": "Slag is a NECESSARY part of flux-cored wire welding. It shields the weld from impurities. Clean off with chipping hammer and wire brush after welding. Gas-shielded MIG welds do NOT produce slag."
+      }
+    }
+  },
+  "stick_weld_diagnosis": {
+    "source_pages": [38, 39, 40],
+    "penetration": {
+      "inadequate": {
+        "visual_description": "Cross-section shows weld does not contact the joint fully — just on the surface. Minimal fusion into base metal.",
+        "cause": "Not hot enough",
+        "corrections_to_increase_heat": [
+          "Increase current",
+          "Weld more slowly"
+        ]
+      },
+      "proper": {
+        "visual_description": "Cross-section shows weld visible underneath and bulges slightly on top. Good fusion into both sides.",
+        "cause": "Ideal heat"
+      },
+      "excess_burn_through": {
+        "visual_description": "Weld droops on top and underneath, or falls through entirely making a hole.",
+        "cause": "Too hot",
+        "corrections_to_reduce_heat": [
+          "Decrease current",
+          "Weld more quickly"
+        ]
+      }
+    },
+    "example_welds": [
+      {
+        "name": "Good Weld",
+        "visual_description": "Smooth, consistent bead with even ripple pattern. Uniform width. Good tie-in at edges. Proper buildup that is slightly convex.",
+        "cause": null,
+        "correction": null
+      },
+      {
+        "name": "Current Too Low",
+        "visual_description": "Tall, narrow, piled-up bead that does not spread. Poor wetting at edges. The bead sits high with inadequate penetration. Lumpy and ropey appearance.",
+        "cause": "Insufficient amperage — not enough heat",
+        "correction": "Increase the current"
+      },
+      {
+        "name": "Current Too High",
+        "visual_description": "Wide, flat, spread-out bead with excessive undercut at the edges. May have spatter. Excessive penetration and possible burn-through.",
+        "cause": "Excessive amperage — too much heat",
+        "correction": "Decrease the current"
+      },
+      {
+        "name": "Weld Speed Too Fast",
+        "visual_description": "Thin, narrow, stringy bead. Insufficient fill — looks starved. Poor penetration. Elongated ripple pattern.",
+        "cause": "Moving the electrode too fast",
+        "correction": "Weld slower — decrease travel speed"
+      },
+      {
+        "name": "Weld Speed Too Slow",
+        "visual_description": "Wide, heavy, over-built bead. Excessive fill with possible distortion of base metal. Overwelded appearance.",
+        "cause": "Moving the electrode too slowly",
+        "correction": "Weld faster — increase travel speed"
+      },
+      {
+        "name": "Arc Length Too Short",
+        "visual_description": "Narrow, convex bead with poor wetting. May have inclusions. Bead appears pinched and tall. Electrode may stick to workpiece.",
+        "cause": "Holding the electrode too close to the workpiece",
+        "correction": "Increase distance — hold electrode further from workpiece"
+      },
+      {
+        "name": "Arc Length Too Long",
+        "visual_description": "Wide, flat, splattery bead with poor definition. Excessive spatter. Porosity may be present. The arc wanders and is difficult to control.",
+        "cause": "Holding the electrode too far from the workpiece",
+        "correction": "Decrease distance — hold electrode closer to workpiece"
+      }
+    ],
+    "defects": {
+      "porosity": {
+        "visual_description": "Small cavities or holes in the bead.",
+        "causes": [
+          "Dirty workpiece or fill material — clean to bare metal, ensure electrode is clean",
+          "Inconsistent welding speed — maintain steady speed"
+        ]
+      },
+      "excessive_spatter": {
+        "visual_description": "Large, grainy spatter scattered around the weld. Fine spatter is normal.",
+        "causes": [
+          "Dirty workpiece or fill material — clean to bare metal, ensure electrode is clean and free of residues"
+        ]
+      },
+      "crooked_wavy_bead": {
+        "visual_description": "Bead wanders and has inconsistent direction.",
+        "causes": [
+          "Inaccurate welding — use two hands or rest hand on steady surface",
+          "Inconsistent welding speed — maintain steady speed"
+        ]
+      },
+      "burn_through": {
+        "visual_description": "Base material melts away leaving a hole.",
+        "causes": [
+          "Workpiece overheating — reduce current",
+          "Welding speed too slow — increase speed and keep steady",
+          "Excessive material at weld — reduce amount of fill material"
+        ]
+      },
+      "weld_not_adhering": {
+        "visual_description": "Gaps between weld and workpiece or previous bead.",
+        "causes": [
+          "Incorrect welding technique — keep arc on leading edge of puddle, hold at proper angles",
+          "Insufficient weld heat — increase current",
+          "Dirty workpiece — clean to bare metal",
+          "Insufficient weld material — increase amount of fill material",
+          "Distance between workpieces to large — decrease distance and increase bevel"
+        ]
+      },
+      "bend_at_joint": {
+        "visual_description": "Weld bends at the joint area.",
+        "causes": [
+          "Improper clamping — clamp securely, use tack welds",
+          "Excessive heat — weld small portion at a time, increase weld speed"
+        ]
+      },
+      "coat_of_slag": {
+        "visual_description": "Dark crusty coating over the weld bead.",
+        "note": "Slag is a necessary part of stick welding. It shields the weld from impurities. Clean off with Chipping Hammer and Wire Brush after welding."
+      }
+    }
+  }
+}

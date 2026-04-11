@@ -1,0 +1,306 @@
+{
+  "wire_weld_diagnosis": {
+    "penetration_cross_sections": [
+      {
+        "type": "inadequate",
+        "visual_description": "Dark grey weld bead sitting on top of joint with minimal penetration into base metal, creating a shallow mushroom shape with poor fusion at edges",
+        "corrective_actions": [
+          "Increase weld current",
+          "Decrease travel speed",
+          "Use faster wire feed",
+          "Use shorter CTWD"
+        ]
+      },
+      {
+        "type": "proper",
+        "visual_description": "Dark grey weld bead with smooth teardrop penetration profile, complete fusion into base metal forming ideal bell-shaped cross-section",
+        "corrective_actions": [
+          "Maintain current settings - ideal heat"
+        ]
+      },
+      {
+        "type": "excess",
+        "visual_description": "Dark grey weld bead with excessive penetration creating deep bulbous shape extending far into base metal, indicating burn-through condition",
+        "corrective_actions": [
+          "Decrease weld current",
+          "Increase travel speed",
+          "Use slower wire feed",
+          "Use longer CTWD"
+        ]
+      }
+    ],
+    "example_welds": [
+      {
+        "label": "Good Weld",
+        "visual_description": "Uniform grey weld bead with consistent width, smooth ripple pattern, clean edges with no spatter, even crown height, regular fish-scale appearance",
+        "causes": [
+          "Proper voltage",
+          "Correct wire feed speed",
+          "Appropriate travel speed",
+          "Optimal CTWD"
+        ],
+        "corrective_actions": [
+          "Maintain current parameters"
+        ]
+      },
+      {
+        "label": "Voltage Too Low or Wire Feed Too Slow",
+        "visual_description": "Narrow grey weld bead with high crown, irregular stacked-coin appearance, poor tie-in at edges, convex profile with tight ripples",
+        "causes": [
+          "Insufficient voltage",
+          "Wire feed speed too slow"
+        ],
+        "corrective_actions": [
+          "Increase Output Voltage",
+          "Increase Wire Feed Speed"
+        ]
+      },
+      {
+        "label": "Voltage Too High or Wire Feed Too Fast",
+        "visual_description": "Wide flat grey weld bead with excessive spatter around edges, irregular ripple pattern, poor penetration profile, scattered dark spots indicating spatter",
+        "causes": [
+          "Excessive voltage",
+          "Wire feed speed too fast"
+        ],
+        "corrective_actions": [
+          "Decrease Output Voltage",
+          "Decrease Wire Feed Speed"
+        ]
+      },
+      {
+        "label": "Travel Speed Too Fast",
+        "visual_description": "Narrow grey weld bead with pointed ripples, poor edge tie-in, undercut along edges, irregular bead width with gaps between ripples",
+        "causes": [
+          "Gun moving too quickly"
+        ],
+        "corrective_actions": [
+          "Reduce travel speed"
+        ]
+      },
+      {
+        "label": "Travel Speed Too Slow",
+        "visual_description": "Wide grey weld bead with excessive buildup, overlapping ripple pattern, burn-through potential, excessive crown height",
+        "causes": [
+          "Gun moving too slowly"
+        ],
+        "corrective_actions": [
+          "Increase travel speed"
+        ]
+      },
+      {
+        "label": "CTWD Too Long or Wrong Polarity",
+        "visual_description": "Grey weld bead with heavy spatter pattern surrounding bead, irregular penetration, numerous dark circular spots indicating spatter balls, poor arc stability appearance",
+        "causes": [
+          "Contact tip too far from work",
+          "Incorrect polarity setting"
+        ],
+        "corrective_actions": [
+          "Check Polarity and maintain less than 1/2 inch CTWD"
+        ]
+      }
+    ],
+    "defects": [
+      {
+        "name": "spatter",
+        "visual_description": "Small dark circular spots scattered around weld bead area, varying in size from pinpoint to larger droplets",
+        "causes": [
+          "Voltage too high",
+          "Wrong polarity",
+          "CTWD too long",
+          "Contaminated base metal"
+        ],
+        "corrections": [
+          "Decrease voltage",
+          "Check polarity",
+          "Reduce CTWD",
+          "Clean base metal"
+        ]
+      },
+      {
+        "name": "poor_penetration",
+        "visual_description": "Weld bead sitting on surface with minimal fusion into base metal, visible lack of tie-in at weld edges",
+        "causes": [
+          "Voltage too low",
+          "Travel speed too fast",
+          "Current too low"
+        ],
+        "corrections": [
+          "Increase voltage",
+          "Decrease travel speed",
+          "Increase current"
+        ]
+      },
+      {
+        "name": "burn_through",
+        "visual_description": "Excessive penetration visible as holes or excessive buildup on backside of weld",
+        "causes": [
+          "Current too high",
+          "Travel speed too slow",
+          "Gap too large"
+        ],
+        "corrections": [
+          "Decrease current",
+          "Increase travel speed",
+          "Reduce gap"
+        ]
+      }
+    ]
+  },
+  "stick_weld_diagnosis": {
+    "penetration_cross_sections": [
+      {
+        "type": "inadequate",
+        "visual_description": "Dark grey weld bead sitting on top of joint with minimal penetration into base metal, creating a shallow mushroom shape with poor fusion at edges",
+        "corrective_actions": [
+          "Increase current",
+          "Weld more slowly"
+        ]
+      },
+      {
+        "type": "proper",
+        "visual_description": "Dark grey weld bead with smooth teardrop penetration profile, complete fusion into base metal forming ideal bell-shaped cross-section",
+        "corrective_actions": [
+          "Maintain current settings - ideal heat"
+        ]
+      },
+      {
+        "type": "excess",
+        "visual_description": "Dark grey weld bead with excessive penetration creating deep bulbous shape extending far into base metal, indicating burn-through condition",
+        "corrective_actions": [
+          "Decrease current",
+          "Weld more quickly"
+        ]
+      }
+    ],
+    "example_welds": [
+      {
+        "label": "Good Weld",
+        "visual_description": "Uniform grey metallic weld bead with consistent width, regular ripple pattern, clean edges, even crown height, smooth fish-scale appearance after slag removal",
+        "causes": [
+          "Proper current setting",
+          "Correct travel speed",
+          "Appropriate arc length"
+        ],
+        "corrective_actions": [
+          "Maintain current parameters"
+        ]
+      },
+      {
+        "label": "Current Too Low",
+        "visual_description": "Grey weld bead with high narrow crown, poor tie-in at edges, irregular stacked appearance, insufficient width, convex profile with tight spacing",
+        "causes": [
+          "Insufficient amperage"
+        ],
+        "corrective_actions": [
+          "Increase the current"
+        ]
+      },
+      {
+        "label": "Current Too High",
+        "visual_description": "Wide flat grey weld bead with excessive spatter craters, burn-through appearance, irregular surface texture, excessive penetration indicators",
+        "causes": [
+          "Excessive amperage"
+        ],
+        "corrective_actions": [
+          "Decrease the current"
+        ]
+      },
+      {
+        "label": "Weld Speed Too Fast",
+        "visual_description": "Narrow grey weld bead with pointed ripples, undercut along edges, insufficient tie-in, irregular bead width with gaps between weld metal and base metal",
+        "causes": [
+          "Electrode moving too quickly"
+        ],
+        "corrective_actions": [
+          "Weld slower"
+        ]
+      },
+      {
+        "label": "Weld Speed Too Slow",
+        "visual_description": "Wide grey weld bead with excessive crown height, overlapping burn patterns, potential burn-through areas, excessive buildup of weld metal",
+        "causes": [
+          "Electrode moving too slowly"
+        ],
+        "corrective_actions": [
+          "Weld faster"
+        ]
+      },
+      {
+        "label": "Arc Length Too Short",
+        "visual_description": "Grey weld bead with irregular ripple pattern, poor bead shape, potential slag inclusions, uneven surface texture with trapped flux areas",
+        "causes": [
+          "Electrode held too close to work piece"
+        ],
+        "corrective_actions": [
+          "Increase distance"
+        ]
+      },
+      {
+        "label": "Arc Length Too Long",
+        "visual_description": "Wide irregular grey weld bead with excessive spatter, poor penetration appearance, wandering bead path, inconsistent ripple formation",
+        "causes": [
+          "Electrode held too far from work piece"
+        ],
+        "corrective_actions": [
+          "Decrease distance"
+        ]
+      }
+    ],
+    "defects": [
+      {
+        "name": "slag",
+        "visual_description": "Dark coating or inclusions over weld surface, may appear as dark streaks or patches that need to be chipped away to reveal underlying metal",
+        "causes": [
+          "Improper cleaning",
+          "Poor technique",
+          "Contaminated electrode"
+        ],
+        "corrections": [
+          "Clean welds first before inspection",
+          "Improve welding technique",
+          "Use fresh electrodes"
+        ]
+      },
+      {
+        "name": "undercut",
+        "visual_description": "Groove or depression along weld toe edges, appearing as dark lines or channels parallel to weld bead",
+        "causes": [
+          "Current too high",
+          "Arc length too long",
+          "Travel speed too fast"
+        ],
+        "corrections": [
+          "Decrease current",
+          "Shorten arc length",
+          "Reduce travel speed"
+        ]
+      },
+      {
+        "name": "poor_penetration",
+        "visual_description": "Weld bead sitting on surface with minimal fusion, visible lack of tie-in at weld toes",
+        "causes": [
+          "Current too low",
+          "Travel speed too fast"
+        ],
+        "corrections": [
+          "Increase current",
+          "Decrease travel speed"
+        ]
+      },
+      {
+        "name": "burn_through",
+        "visual_description": "Excessive penetration creating holes or excessive sagging on backside",
+        "causes": [
+          "Current too high",
+          "Travel speed too slow",
+          "Arc length too short"
+        ],
+        "corrections": [
+          "Decrease current",
+          "Increase travel speed",
+          "Maintain proper arc length"
+        ]
+      }
+    ]
+  }
+}

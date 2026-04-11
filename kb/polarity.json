@@ -1,0 +1,67 @@
+{
+  "description": "Polarity configuration for each welding process on the Vulcan OmniPro 220. The welder has three output sockets on the front: Positive (+), Negative (-), and MIG Gun/Spool Gun Cable Socket. Wire Feed Power Cable connects internally.",
+  "processes": {
+    "MIG": {
+      "full_name": "MIG / Solid Core Gas Shielded Welding",
+      "polarity_type": "DCEP",
+      "polarity_full_name": "Direct Current Electrode Positive",
+      "ground_clamp_cable": "Negative (-) Socket",
+      "wire_feed_power_cable": "Positive (+) Socket",
+      "shielding_gas": "Required — C25 (75% Argon / 25% CO2) for mild steel, Stainless Tri-Mix for stainless, 100% Argon for aluminum",
+      "gas_flow_scfh": "20-30",
+      "explanation": "In DCEP, the electrode (wire) is positive and the workpiece is negative. This provides deeper penetration and a cleaner arc with shielding gas.",
+      "manual_pages": [14, 20]
+    },
+    "Flux-Cored": {
+      "full_name": "Flux-Cored / Self-Shielded Gasless Welding",
+      "polarity_type": "DCEN",
+      "polarity_full_name": "Direct Current Electrode Negative",
+      "ground_clamp_cable": "Positive (+) Socket",
+      "wire_feed_power_cable": "Negative (-) Socket",
+      "shielding_gas": "None required — flux core provides shielding",
+      "gas_flow_scfh": null,
+      "explanation": "In DCEN, the electrode (wire) is negative and the workpiece is positive. This is REVERSED from MIG. The flux in the wire provides its own shielding, so no gas bottle is needed. CRITICAL: if you switch from MIG to Flux-Cored, you MUST swap the cables.",
+      "manual_pages": [13, 20]
+    },
+    "TIG": {
+      "full_name": "TIG / GTAW (Gas Tungsten Arc Welding)",
+      "polarity_type": "DCEN",
+      "polarity_full_name": "Direct Current Electrode Negative",
+      "ground_clamp_cable": "Positive (+) Socket",
+      "tig_torch_cable": "Negative (-) Socket",
+      "wire_feed_power_cable": "Not connected — leave disconnected",
+      "foot_pedal": "Foot Pedal Socket (inside welder, accessible through front hole)",
+      "shielding_gas": "100% Argon",
+      "gas_flow_scfh": "10-25",
+      "explanation": "TIG torch goes in the Negative socket, ground clamp in Positive. The foot pedal controls amperage during welding. Gas connects from the Argon cylinder through the regulator to the TIG Torch Cable Connector.",
+      "manual_pages": [24, 25, 30]
+    },
+    "Stick": {
+      "full_name": "Stick / SMAW (Shielded Metal Arc Welding)",
+      "polarity_type": "DCEP",
+      "polarity_full_name": "Direct Current Electrode Positive",
+      "ground_clamp_cable": "Negative (-) Socket",
+      "electrode_holder_cable": "Positive (+) Socket",
+      "wire_feed_power_cable": "Not connected — leave disconnected",
+      "shielding_gas": "None required — electrode coating provides shielding",
+      "gas_flow_scfh": null,
+      "explanation": "Electrode holder goes in Positive socket, ground clamp in Negative. No gas, no wire feed. The electrode's flux coating provides shielding. Electrode types include 60xx and 70xx series.",
+      "manual_pages": [27, 32]
+    }
+  },
+  "spool_gun": {
+    "description": "Optional Spool Gun (sold separately) setup",
+    "ground_clamp_cable": "Negative (-) Socket",
+    "wire_feed_power_cable": "Positive (+) Socket",
+    "spool_gun_cable_connector": "Through MIG Gun socket hole into Wire Feed mechanism",
+    "wire_feed_control_cable": "Wire Feed Control Socket inside welder",
+    "gas_hose": "Spool Gun Gas Outlet on front of welder",
+    "manual_pages": [17]
+  },
+  "common_mistakes": [
+    "Forgetting to swap cables when switching between MIG (DCEP) and Flux-Cored (DCEN) — polarity is REVERSED",
+    "Connecting wire feed power cable for TIG or Stick — it should be LEFT DISCONNECTED",
+    "Not connecting foot pedal for TIG welding",
+    "Using wrong gas — MIG uses C25 or Tri-Mix, TIG uses 100% Argon, Flux-Cored and Stick use no gas"
+  ]
+}

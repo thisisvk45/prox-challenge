@@ -1,0 +1,95 @@
+{
+  "source": "selection-chart.pdf (1 page) — extracted via visual inspection",
+  "title": "How to Choose a Welder",
+  "decision_matrix": {
+    "criteria": ["skill_level", "shielding_gas", "material_type", "material_thickness", "typical_applications", "weld_cleanliness"],
+    "processes": {
+      "flux_cored_fcaw": {
+        "skill_level": "Low",
+        "shielding_gas": "No gas required",
+        "material_type": ["Steel", "Stainless Steel"],
+        "material_thickness": "18 Gauge to 5/16\"",
+        "typical_applications": ["Galvanized steel", "General fabrication", "Pipe and tubing", "Maintenance & repair"],
+        "weld_cleanliness": "More spatter",
+        "pros": [
+          "Ideal for outdoor or windy conditions",
+          "Forgiving on rusty or dirty steels",
+          "Good out of position welding capabilities",
+          "High deposition rates achievable"
+        ]
+      },
+      "mig_gmaw": {
+        "skill_level": "Low to Moderate",
+        "shielding_gas": "Gas required — indoor welding recommended",
+        "material_type": ["Steel", "Stainless Steel", "Aluminum (Spool gun required)"],
+        "material_thickness": "22 Gauge to 3/8\"",
+        "typical_applications": ["Sheet metal", "Automotive body", "Tubing", "Structural steel"],
+        "weld_cleanliness": "Clean / Minimal spatter",
+        "pros": [
+          "Fast production (high welding speeds)",
+          "Easiest to learn",
+          "Clean welds with no slag",
+          "Better control on thin materials"
+        ]
+      },
+      "stick_smaw": {
+        "skill_level": "Moderate to High",
+        "shielding_gas": "No gas required",
+        "material_type": ["Steel", "Stainless Steel", "Castings"],
+        "material_thickness": "10 Gauge to 1/2\"",
+        "typical_applications": ["Pipe and tubing", "Structural steel", "Pressure vessels", "Maintenance & repair"],
+        "weld_cleanliness": "More spatter",
+        "pros": [
+          "Ideal for outdoor or windy conditions",
+          "Forgiving on rusty or dirty steels",
+          "Deep penetration",
+          "Good choice for thicker materials"
+        ]
+      },
+      "tig_gtaw": {
+        "skill_level": "High",
+        "shielding_gas": "Gas required — indoor welding recommended",
+        "material_type": {
+          "dc_tig": ["Steel", "Stainless Steel", "Chrome Moly"],
+          "ac_tig": ["Aluminum", "Magnesium alloys"]
+        },
+        "material_thickness": "24 Gauge to 3/16\"",
+        "typical_applications": ["Stainless steel exhausts", "Bicycle frames", "Thin wall pipe & tubing", "Metal art"],
+        "weld_cleanliness": "Extremely clean",
+        "pros": [
+          "Highest quality welds",
+          "Extremely aesthetic weld appearance",
+          "Can be used on a variety of materials",
+          "Precise control"
+        ]
+      }
+    }
+  },
+  "mig_vs_flux_cored_comparison": {
+    "mig": {
+      "uses": "Solid wire",
+      "shielding": "Uses shielding gas",
+      "welds": "Clean welds",
+      "surface_prep": "Mill scale and rust must be removed",
+      "outdoor_use": false,
+      "penetration": "Deep weld penetration",
+      "material_handling": "Handles material like sheet metal, gate, wall",
+      "thin_materials": "Thin materials like sheet metal"
+    },
+    "flux_cored": {
+      "uses": "Cored wire",
+      "shielding": "No shielding gas required",
+      "welds": "Welds over mill scale and rust",
+      "surface_prep": "Requires minimal surface prep",
+      "outdoor_use": true,
+      "penetration": "Deep weld penetration",
+      "material_handling": "Handles material like gate, wall",
+      "thin_materials": null
+    }
+  },
+  "duty_cycle_example": {
+    "description": "The Duty Cycle is the number of minutes within a 10 minute period a welder can produce at the specified welding amperage without overheating.",
+    "example": "165A @ 30% Duty Cycle = 3 Minutes Welding, 7 Minutes Resting"
+  },
+  "input_voltage_note": "Important: Identify your input voltage — Do you have 120 Volt or 240 Volt?"
+}

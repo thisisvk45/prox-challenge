@@ -1,0 +1,76 @@
+{
+  "product": "Vulcan OmniPro 220 Multiprocess Welding System",
+  "item_number": 57812,
+  "max_ocv": "86 VDC",
+  "processes": {
+    "MIG": {
+      "120VAC_60Hz": {
+        "current_input_at_output": "20.8A at 100A",
+        "welding_current_range_amps": [30, 140],
+        "rated_duty_cycles": [
+          {"duty_cycle_percent": 40, "at_amperage": 100},
+          {"duty_cycle_percent": 100, "at_amperage": 75}
+        ],
+        "max_ocv": "86 VDC"
+      },
+      "240VAC_60Hz": {
+        "current_input_at_output": "25.5A at 200A",
+        "welding_current_range_amps": [30, 220],
+        "rated_duty_cycles": [
+          {"duty_cycle_percent": 25, "at_amperage": 200},
+          {"duty_cycle_percent": 100, "at_amperage": 115}
+        ],
+        "max_ocv": "86 VDC"
+      },
+      "weldable_materials": ["Mild Steel", "Stainless Steel", "Aluminum (with optional Spool Gun)"],
+      "welding_wire_capacity": {
+        "solid_core": ["0.025\"", "0.030\"", "0.035\""],
+        "flux_cored": ["0.030\"", "0.035\"", "0.045\""]
+      },
+      "wire_speed_ipm": [50, 500],
+      "wire_spool_capacity": "Up to 12 lb spool"
+    },
+    "TIG": {
+      "120VAC_60Hz": {
+        "current_input_at_output": "20.6A at 125A",
+        "welding_current_range_amps": [10, 125],
+        "rated_duty_cycles": [
+          {"duty_cycle_percent": 40, "at_amperage": 125},
+          {"duty_cycle_percent": 100, "at_amperage": 90}
+        ],
+        "max_ocv": "86 VDC"
+      },
+      "240VAC_60Hz": {
+        "current_input_at_output": "15.6A at 175A",
+        "welding_current_range_amps": [10, 175],
+        "rated_duty_cycles": [
+          {"duty_cycle_percent": 30, "at_amperage": 175},
+          {"duty_cycle_percent": 100, "at_amperage": 105}
+        ],
+        "max_ocv": "86 VDC"
+      },
+      "weldable_materials": ["Mild Steel", "Stainless Steel", "Chrome Moly"]
+    },
+    "Stick": {
+      "120VAC_60Hz": {
+        "current_input_at_output": "19.5A at 80A",
+        "welding_current_range_amps": [10, 80],
+        "rated_duty_cycles": [
+          {"duty_cycle_percent": 40, "at_amperage": 80},
+          {"duty_cycle_percent": 100, "at_amperage": 60}
+        ],
+        "max_ocv": "86 VDC"
+      },
+      "240VAC_60Hz": {
+        "current_input_at_output": "23.7A at 175A",
+        "welding_current_range_amps": [10, 175],
+        "rated_duty_cycles": [
+          {"duty_cycle_percent": 25, "at_amperage": 175},
+          {"duty_cycle_percent": 100, "at_amperage": 100}
+        ],
+        "max_ocv": "86 VDC"
+      },
+      "weldable_materials": ["Mild Steel", "Stainless Steel"]
+    }
+  }
+}

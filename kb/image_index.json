@@ -1,0 +1,160 @@
+{
+  "description": "Maps topics to relevant page images for the agent to serve when answering questions. The agent should surface these images when a question touches the listed topics or keywords.",
+  "topics": {
+    "front_panel_layout": {
+      "images": ["owner_p08_front_panel.png"],
+      "keywords": ["front panel", "controls", "knobs", "buttons", "LCD", "sockets", "where is", "which socket", "power switch", "home button", "back button"],
+      "description": "Labeled diagram of all front panel controls: Home/Back buttons, Control/Left/Right Knobs, LCD Display, Power Switch, MIG Gun socket, Positive/Negative sockets, Wire Feed Power Cable, Spool Gun Gas Outlet, Storage Compartment"
+    },
+    "interior_controls": {
+      "images": ["owner_p09_interior_controls.png"],
+      "keywords": ["interior", "inside", "wire feed mechanism", "feed tensioner", "idler arm", "wire spool", "spool knob", "feed roller", "foot pedal socket", "wire feed control socket", "cold wire feed switch"],
+      "description": "Labeled diagram of interior: Wire Spool, Spool Knob, Wire Feed Mechanism, Wire Inlet Liner, Cold Wire Feed Switch, Feed Tensioner, Idler Arm, Feed Roller Knob, Foot Pedal Socket, Wire Feed Control Socket"
+    },
+    "polarity_mig_dcep": {
+      "images": ["owner_p14_mig_polarity_dcep_gas.png", "qsg_p02_cable_setups.png"],
+      "keywords": ["MIG polarity", "DCEP", "solid core polarity", "gas shielded polarity", "MIG cable setup"],
+      "description": "DCEP setup for MIG: Ground Clamp in Negative socket, Wire Feed Power Cable in Positive socket. Gas cylinder connection steps."
+    },
+    "polarity_flux_dcen": {
+      "images": ["owner_p13_flux_polarity_dcen.png", "qsg_p02_cable_setups.png"],
+      "keywords": ["flux-cored polarity", "DCEN", "gasless polarity", "flux cable setup"],
+      "description": "DCEN setup for Flux-Cored: Ground Clamp in Positive socket, Wire Feed Power Cable in Negative socket. No gas needed."
+    },
+    "polarity_tig": {
+      "images": ["owner_p24_tig_cable_setup.png", "qsg_p02_cable_setups.png"],
+      "keywords": ["TIG polarity", "TIG cable", "TIG setup", "TIG torch", "foot pedal", "argon"],
+      "description": "TIG setup: Ground Clamp in Positive, TIG Torch in Negative, Foot Pedal in Foot Pedal Socket, Shielding Gas Hose to TIG Torch connector."
+    },
+    "polarity_stick": {
+      "images": ["owner_p27_stick_cable_setup.png", "qsg_p02_cable_setups.png"],
+      "keywords": ["stick polarity", "stick cable", "stick setup", "electrode holder", "SMAW"],
+      "description": "Stick setup: Ground Clamp in Negative, Electrode Holder in Positive. No gas, no wire feed."
+    },
+    "polarity_all_processes": {
+      "images": ["qsg_p02_cable_setups.png"],
+      "keywords": ["all polarity", "cable setup", "which cable", "compare processes", "switch process"],
+      "description": "Quick Start Guide page 2: side-by-side cable setup photos for all 4 processes (Stick, MIG, Flux, TIG)"
+    },
+    "wire_spool_installation": {
+      "images": ["owner_p10_wire_spool_1_2lb.png", "owner_p11_wire_spool_10_12lb.png"],
+      "keywords": ["wire spool", "install spool", "spool loading", "wingnut", "spacer", "spool adapter", "brake pad"],
+      "description": "Wire spool installation for both 1-2 lb and 10-12 lb spools with labeled diagrams"
+    },
+    "feed_roller_selection": {
+      "images": ["owner_p12_feed_roller.png"],
+      "keywords": ["feed roller", "V-groove", "knurled", "roller size", "wire size", "flip roller"],
+      "description": "Feed Roller types: V-Groove (solid core) vs Knurled Groove (flux-cored), with wire diameter markings"
+    },
+    "wire_threading_and_tension": {
+      "images": ["owner_p15_wire_threading.png", "owner_p16_cold_wire_feed.png", "owner_p17_tension_test_nozzle_spool_gun.png"],
+      "keywords": ["wire threading", "wire feed", "tension", "idler arm", "feed tensioner", "cold wire feed", "tension test"],
+      "description": "Wire threading through liner, tensioner latching, cold wire feed procedure, drive tension test (2-3 inches against wood block)"
+    },
+    "gun_cable_connector": {
+      "images": ["owner_p13_flux_polarity_dcen.png"],
+      "keywords": ["gun cable", "connector", "MIG gun", "not fully inserted", "O-ring"],
+      "description": "Correct vs incorrect Gun Cable Connector insertion into Wire Feed mechanism"
+    },
+    "gas_cylinder_setup": {
+      "images": ["owner_p14_mig_polarity_dcep_gas.png", "owner_p25_tig_gas_setup.png"],
+      "keywords": ["gas cylinder", "regulator", "gas hose", "C25", "argon", "shielding gas", "SCFH"],
+      "description": "Gas cylinder mounting, valve cleaning, regulator connection, gas hose to welder"
+    },
+    "duty_cycle_mig": {
+      "images": ["owner_p19_duty_cycle_mig.png"],
+      "keywords": ["duty cycle", "MIG duty", "overheating", "how long can I weld", "rest time", "thermal protection"],
+      "description": "MIG duty cycle visual: 120V 40%@100A (4min weld/6min rest), 100%@75A. 240V 25%@200A (2.5min/7.5min), 100%@115A."
+    },
+    "duty_cycle_tig_stick": {
+      "images": ["owner_p29_duty_cycle_tig_stick.png"],
+      "keywords": ["TIG duty cycle", "stick duty cycle", "TIG overheating", "stick overheating"],
+      "description": "TIG and Stick duty cycles. TIG: 120V 40%@125A/100%@90A, 240V 30%@175A/100%@105A. Stick: 120V 40%@80A/100%@60A, 240V 25%@175A/100%@100A."
+    },
+    "settings_mig": {
+      "images": ["owner_p20_settings_mig.png", "owner_p21_optional_settings_gas.png"],
+      "keywords": ["MIG settings", "wire diameter", "material thickness", "wire feed speed", "voltage setting", "inductance", "run-in WFS", "spot timer", "synergic"],
+      "description": "MIG LCD settings walkthrough: process selection, wire diameter, material thickness, auto weld WFS/voltage, optional settings (Run-In WFS, Inductance, Spot Timer, Recall/Save)"
+    },
+    "settings_tig": {
+      "images": ["owner_p30_settings_tig.png"],
+      "keywords": ["TIG settings", "rod diameter", "TIG amperage", "energize torch"],
+      "description": "TIG LCD settings: process selection, 100% Argon, rod diameter, material thickness, amperage, ON/OFF torch"
+    },
+    "settings_stick": {
+      "images": ["owner_p32_settings_stick.png"],
+      "keywords": ["stick settings", "electrode type", "electrode diameter", "hot start", "arc force", "60xx", "70xx"],
+      "description": "Stick LCD settings: process, electrode type (60xx/70xx), electrode diameter, material thickness, amperage, Hot Start, Arc Force"
+    },
+    "welding_technique_wire": {
+      "images": ["owner_p22_wire_welding_technique.png"],
+      "keywords": ["stringer bead", "weave bead", "push angle", "drag angle", "CTWD", "contact tip to work distance", "gun angle", "fillet", "butt weld"],
+      "description": "Wire welding technique: stringer vs weave bead, 90° butt / 45° fillet angles, push angle (MIG) vs drag angle (flux-cored), CTWD up to 1/2 inch"
+    },
+    "electrode_grinding_torch_assembly": {
+      "images": ["owner_p26_electrode_grinding_torch_assembly.png"],
+      "keywords": ["tungsten", "electrode", "grinding", "sharpen", "TIG torch", "collet", "collet body", "ceramic nozzle", "back cap"],
+      "description": "Tungsten electrode sharpening technique and TIG torch exploded assembly view (Back Cap, Collet, Collet Body, Ceramic Nozzle)"
+    },
+    "weld_diagnosis_wire": {
+      "images": ["owner_p35_wire_weld_diagnosis.png", "owner_p36_wire_penetration_defects.png", "owner_p37_wire_porosity_spatter_burn.png"],
+      "keywords": ["wire weld diagnosis", "MIG weld quality", "flux weld quality", "penetration", "porosity", "spatter", "burn-through", "voltage too low", "voltage too high", "travel speed", "CTWD too long", "weld looks bad", "holes in weld", "lumpy weld"],
+      "description": "Wire weld diagnosis: cross-section penetration diagrams, 6 example weld photos (good, voltage low/high, speed fast/slow, CTWD/polarity wrong), porosity, spatter, crooked bead, burn-through"
+    },
+    "weld_diagnosis_stick": {
+      "images": ["owner_p38_stick_weld_diagnosis.png", "owner_p39_stick_penetration_defects.png", "owner_p40_stick_porosity_spatter_burn.png"],
+      "keywords": ["stick weld diagnosis", "stick weld quality", "current too low", "current too high", "arc length", "stick weld looks bad"],
+      "description": "Stick weld diagnosis: cross-section penetration, 7 example weld photos (good, current low/high, speed fast/slow, arc length short/long), porosity, spatter, burn-through"
+    },
+    "strike_test": {
+      "images": ["owner_p34_strike_test_cleaning.png"],
+      "keywords": ["strike test", "test weld", "good weld", "poor weld", "cleaning weld", "chipping hammer", "wire brush", "slag"],
+      "description": "Strike test procedure (hammer test: good weld bends, poor weld snaps) and weld cleaning with chipping hammer and wire brush"
+    },
+    "wiring_schematic": {
+      "images": ["owner_p45_wiring_schematic.png"],
+      "keywords": ["wiring schematic", "electrical diagram", "circuit", "MCU board", "IGBT", "PFC", "transformer", "rectifier", "internal wiring"],
+      "description": "Full electrical wiring schematic: AC input, rectifier bridge, PFC, IGBT inverter, MCU Board, Remote Board, LCD Screen, Wire Feeder motor, Solenoid Valves, Fans"
+    },
+    "assembly_exploded": {
+      "images": ["owner_p47_assembly_diagram.png"],
+      "keywords": ["assembly diagram", "exploded view", "parts diagram", "internal parts", "where is part"],
+      "description": "Exploded isometric assembly diagram with 61 numbered callouts matching the parts list"
+    },
+    "parts_list": {
+      "images": ["owner_p46_parts_list.png"],
+      "keywords": ["parts list", "part number", "replacement parts", "how many", "quantity"],
+      "description": "61-item parts list table with part numbers, descriptions, and quantities"
+    },
+    "maintenance": {
+      "images": ["owner_p41_maintenance.png"],
+      "keywords": ["maintenance", "cleaning", "nozzle cleaning", "contact tip", "LCD screen cover", "inspection"],
+      "description": "Maintenance: pre-use inspection checklist, MIG Gun Nozzle/Contact Tip cleaning (9 steps), LCD Screen Cover replacement"
+    },
+    "settings_chart_door": {
+      "images": ["door_panel_chart.webp"],
+      "keywords": ["settings chart", "door panel", "quick reference", "inside door", "rated duty cycles summary"],
+      "description": "Photo of the Settings Chart printed on inside of welder door — quick reference for all process settings, duty cycles, wire spool setup, and wire feed setup"
+    },
+    "selection_chart": {
+      "images": ["selection_chart.png"],
+      "keywords": ["which process", "how to choose", "which welder", "flux vs MIG", "MIG vs TIG", "TIG vs stick", "skill level", "material type", "material thickness", "process comparison"],
+      "description": "Welding process selection decision chart: skill level, gas requirements, materials, thickness ranges, applications, weld cleanliness for Flux-Cored, MIG, Stick, TIG"
+    },
+    "quick_start_overview": {
+      "images": ["qsg_p01_setup_steps.png"],
+      "keywords": ["quick start", "first time setup", "getting started", "6 steps", "beginner setup"],
+      "description": "6-step quick start visual poster for first-time setup"
+    },
+    "spool_gun_setup": {
+      "images": ["owner_p17_tension_test_nozzle_spool_gun.png"],
+      "keywords": ["spool gun", "aluminum welding", "optional spool gun"],
+      "description": "Optional Spool Gun setup: Ground Clamp in Negative, Wire Feed Power in Positive, Spool Gun Cable through MIG Gun socket, Gas Hose to Spool Gun Gas Outlet"
+    },
+    "overheating_warning": {
+      "images": ["owner_p23_post_welding_overheating.png"],
+      "keywords": ["overheating", "warning screen", "thermal shutdown", "duty cycle exceeded", "low voltage", "high voltage"],
+      "description": "LCD warning screen showing problem/remedy for Duty Cycle Exceeded, Low Voltage Input, High Voltage Input. Post-welding procedures."
+    }
+  }
+}

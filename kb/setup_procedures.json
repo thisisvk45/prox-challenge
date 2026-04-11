@@ -1,0 +1,274 @@
+{
+  "processes": {
+    "MIG": {
+      "full_name": "MIG / Solid Core Gas Shielded Wire Welding",
+      "polarity": "DCEP",
+      "manual_pages": {"setup": [10, 11, 12, 13, 14, 15, 16, 17], "settings": [20, 21], "welding": [18, 19, 22, 23]},
+      "steps": [
+        {
+          "phase": "Wire Spool Installation",
+          "steps": [
+            "Turn the Power Switch OFF and unplug the Welder before proceeding.",
+            "Pull up on the Door Latch, then open the Door.",
+            "For 1-2 lb spool: Remove Wingnut and Spacer. Place Wire Spool over Spool Spindle against Spool Brake Pad. Set spool so wire unwinds CLOCKWISE. Replace Spacer and secure with Wingnut.",
+            "For 10-12 lb spool: Remove Wingnut and Spacer. Place Spool Adapter over Spool Spindle against Brake Pad. Place Wire Spool over Adapter, line up pin with hole. Set spool so wire unwinds CLOCKWISE. Replace Spacer, secure with Wingnut. Screw Spool Knob into Spool Adapter.",
+            "NOTICE: If Wire Spool spins freely, Wingnut is too loose — wire will unravel and tangle."
+          ]
+        },
+        {
+          "phase": "Feed Roller Setup",
+          "steps": [
+            "Check that Feed Roller is correct for wire type: V-Groove for solid core, Knurled Groove for flux-cored.",
+            "Unscrew Feed Roller Knob counterclockwise.",
+            "Remove Feed Roller Knob to expose the Feed Roller.",
+            "Flip or replace Feed Roller as needed. Confirm the number showing matches wire diameter on Spool.",
+            "Screw Feed Roller Knob back into place."
+          ]
+        },
+        {
+          "phase": "Gun Cable Connection",
+          "steps": [
+            "Loosen the Knob on the Wire Feed mechanism.",
+            "Insert the Gun Cable Connector through the hole on the Welder front and into the socket on the Wire Feed.",
+            "Ensure connector is FULLY inserted (no O-rings visible). Tighten Knob securely.",
+            "NOTICE: Do not overtighten the Knob."
+          ]
+        },
+        {
+          "phase": "Wire Feed Control Cable",
+          "steps": [
+            "Insert the Wire Feed Control Cable through the hole on the Welder front.",
+            "Connect it to the Wire Feed Control Socket inside the machine.",
+            "Tighten the lock ring on the Cable plug. Note: plug fits in one specific orientation only."
+          ]
+        },
+        {
+          "phase": "Polarity Setup — DCEP for MIG",
+          "steps": [
+            "Plug Ground Clamp Cable into Negative (–) Socket. Twist clockwise to lock.",
+            "Plug Wire Feed Power Cable into Positive (+) Socket. Twist clockwise to lock."
+          ]
+        },
+        {
+          "phase": "Gas Setup",
+          "steps": [
+            "Determine shielding gas type: C25 for mild steel, Stainless Tri-Mix for stainless, 100% Argon for aluminum.",
+            "With assistance, place gas cylinder on cabinet/cart near Welder. Secure with two straps.",
+            "Remove cylinder cap. Stand to side, briefly open valve to blow dust/dirt, then close.",
+            "Locate Regulator, close its valve, thread onto cylinder and wrench-tighten. (For C100 gas: connect CGA 580/320 adapter first.)",
+            "Attach Gas Hose to Regulator outlet and Welder gas inlet. Wrench-tighten both."
+          ]
+        },
+        {
+          "phase": "Wire Threading",
+          "steps": [
+            "IMPORTANT: Securely hold onto the end of the welding wire and keep tension during these steps.",
+            "Cut off all bent and crimped wire. Cut end must have no burrs or sharp edges.",
+            "Keep tension on wire and guide at least 12 inches into the Wire Inlet Liner.",
+            "Make sure welding wire is resting in the groove of the Feed Roller.",
+            "Push wire Idler Arm down and swing Feed Tensioner up to latch it across the arm.",
+            "Set tension: 3-5 for solid wire, 2-3 for flux-cored (too much force crushes flux-cored wire).",
+            "Pull the Nozzle to remove it. Unscrew the Contact Tip counterclockwise and remove.",
+            "Lay the MIG Gun Cable out in a straight line so welding wire moves through it easily."
+          ]
+        },
+        {
+          "phase": "Power Up and Wire Feed",
+          "steps": [
+            "DANGER: Keep hands away from Wire Feed mechanism. Close door before plugging in.",
+            "Plug either 120VAC or 240VAC Power Cord into Power Input Socket. Plug will only fit one way.",
+            "Plug Power Cord into properly grounded, GFCI protected 120VAC (20 amp) or 240VAC receptacle.",
+            "Turn Power Switch ON.",
+            "Point Gun away from all objects. Press and hold Cold Wire Feed Switch until wire feeds through 2 inches past end of gun.",
+            "If wire doesn't feed, turn OFF, unplug, and slightly tighten Feed Tensioner clockwise before retrying."
+          ]
+        },
+        {
+          "phase": "Drive Tension Test",
+          "steps": [
+            "Press and hold Trigger to feed wire against a piece of wood from 2-3 inches away.",
+            "Incrementally increase tension until wire bends. If wire bends, tension is correct.",
+            "If wire stops instead of bending, slightly tighten Feed Tensioner and retry.",
+            "Turn OFF Power Switch and unplug Power Cord."
+          ]
+        },
+        {
+          "phase": "Final Assembly",
+          "steps": [
+            "Close the Door. Make sure Door is securely latched.",
+            "Select a Contact Tip compatible with the welding wire used.",
+            "Slide Contact Tip over wire and thread clockwise into MIG Gun. Tighten.",
+            "Replace the Nozzle and cut wire off at 1/2\" from tip (1/2\" stickout)."
+          ]
+        },
+        {
+          "phase": "LCD Settings",
+          "steps": [
+            "Press Home Button on Control Panel.",
+            "Turn Main Control Knob until MIG process appears on LCD display screen.",
+            "Press Main Control Knob to select MIG.",
+            "Set Polarity and Gas — LCD shows cable and gas configuration. Set SCFH between 20-30.",
+            "Set Wire Diameter (Left Knob) and Material Thickness (Right Knob).",
+            "Auto Weld Settings — machine recommends Wire Feed Speed (Left Knob) and Voltage (Right Knob). White mark shows recommended setting.",
+            "Optional: Press Main Control Knob for Run-In WFS, Inductance, Spot Timer, Recall/Save Settings."
+          ]
+        }
+      ]
+    },
+    "Flux-Cored": {
+      "full_name": "Flux-Cored / Self-Shielded Gasless Wire Welding",
+      "polarity": "DCEN",
+      "manual_pages": {"setup": [10, 11, 12, 13, 15, 16, 17], "settings": [20, 21], "welding": [18, 19, 22, 23]},
+      "note": "Setup is identical to MIG EXCEPT: polarity is REVERSED (DCEN) and NO gas is needed.",
+      "differences_from_mig": [
+        "Polarity: Ground Clamp → Positive (+) Socket, Wire Feed Power Cable → Negative (–) Socket",
+        "Feed Roller: Use Knurled Groove side (not V-Groove)",
+        "Feed Tensioner: Set to 2-3 (lower than MIG's 3-5) — flux-cored wire crushes easily",
+        "No gas cylinder, regulator, or gas hose needed",
+        "Use drag angle (0-15° in weld direction) instead of push angle",
+        "Weld will be covered by slag — clean off with chipping hammer and wire brush"
+      ]
+    },
+    "TIG": {
+      "full_name": "TIG / GTAW (Gas Tungsten Arc Welding)",
+      "polarity": "DCEN (torch negative)",
+      "manual_pages": {"setup": [24, 25, 26], "settings": [30], "welding": [29, 31]},
+      "steps": [
+        {
+          "phase": "Connect Cables",
+          "steps": [
+            "Plug Ground Clamp Cable into Positive (+) Socket. Twist clockwise all the way to lock in place.",
+            "Plug TIG Torch Cable (sold separately) into Negative (–) Socket. Twist clockwise to lock.",
+            "Insert Foot Pedal Cable (Foot Pedal sold separately) through hole on Welder front and connect to Foot Pedal Socket inside the machine. Secure by turning collar clockwise until tight."
+          ]
+        },
+        {
+          "phase": "Connect Shielding Gas",
+          "steps": [
+            "With assistance, place 100% Argon cylinder on cabinet/cart. Secure with two straps.",
+            "Remove cylinder cap. Stand to side, briefly open valve to clean, then close.",
+            "Locate Regulator, close its valve, thread onto cylinder and wrench-tighten.",
+            "Connect Shielding Gas Hose on TIG Torch Cable Connector to Regulator Outlet. Wrench-tighten."
+          ]
+        },
+        {
+          "phase": "Connect Power Cord",
+          "steps": [
+            "Plug either 120VAC or 240VAC Power Cord into Power Input Socket.",
+            "WARNING: Do not plug cord into wall outlet at this time."
+          ]
+        },
+        {
+          "phase": "Sharpen Tungsten Electrode",
+          "steps": [
+            "Dedicate a fine grit grinding wheel exclusively to Electrode grinding.",
+            "Shut off welder and wait for Electrode and Torch to cool.",
+            "Remove Back Cap. Pull Electrode from front of Torch.",
+            "If Electrode is dulled or contaminated, grip above contaminated section and snap off end.",
+            "Press Electrode tip against grinding wheel at an angle. Rotate until blunt point is formed.",
+            "Grinding direction must be parallel to length of Electrode.",
+            "Ideal conical tip should be 2-2.5 times as long as the Electrode diameter.",
+            "Re-insert Electrode into Collet with tip protruding 1/8\" to 1/4\" beyond Ceramic Nozzle. Re-tighten Back Cap."
+          ]
+        },
+        {
+          "phase": "Assemble TIG Torch",
+          "steps": [
+            "Consult Settings Chart on top of Welder to determine proper Tungsten Electrode size for material thickness.",
+            "Match Collet and Collet Body sizes to Tungsten Electrode size.",
+            "Thread Collet Body into the front of the Torch.",
+            "Make sure Ceramic Nozzle size is appropriate for application.",
+            "Thread Ceramic Nozzle onto Collet Body.",
+            "Insert Collet into back of Torch and into Collet Body.",
+            "Insert Tungsten Electrode into Collet on front of Torch.",
+            "Lock Electrode in place with Back Cap. Electrode should protrude 1/8\" to 1/4\" beyond Ceramic Nozzle."
+          ]
+        },
+        {
+          "phase": "LCD Settings",
+          "steps": [
+            "Open gas cylinder valve all the way.",
+            "Set Flow Gauge to SCFH value indicated on Settings Chart (10-25).",
+            "Turn Power Switch to OFF, plug into GFCI protected 120VAC (20 amp) or 240V outlet.",
+            "Set TIG Torch down on nonconductive, nonflammable surface away from grounded objects.",
+            "Turn Power Switch ON.",
+            "Press Home Button on Control Panel.",
+            "Turn Main Control Knob until TIG process appears on LCD.",
+            "Press Main Control Knob to select TIG.",
+            "Set Polarity and Gas — plug cables as shown, connect 100% Argon, set SCFH 10-25.",
+            "Set Rod Diameter (Left Knob) and Material Thickness (Right Knob).",
+            "Auto Weld Settings — Turn Left Knob to adjust output amperage. Turn Right Knob to ON to energize TIG Torch.",
+            "WARNING: Welder is now energized and Open Circuit Voltage is present.",
+            "Optional: Recall Setting, Save Setting (up to 5 configurations)."
+          ]
+        },
+        {
+          "phase": "Welding Technique",
+          "steps": [
+            "Hold TIG Torch in one gloved hand and TIG Rod in other gloved hand.",
+            "Maintain constant distance between Tungsten Electrode and workpiece: 1 to 1.5 times the Electrode diameter.",
+            "Open valve on TIG Torch to start gas flow.",
+            "Push Foot Pedal to initiate arc (or touch Electrode to workpiece and lift if no pedal).",
+            "When welding puddle is hot enough, tilt Torch backward 10-15 degrees from vertical.",
+            "Move it back slightly. Add TIG Rod material as needed to front end of weld puddle.",
+            "Alternate between pushing torch/weld puddle and adding TIG Rod material.",
+            "Remove TIG Rod each time but do not remove it from the gas shield (prevents oxidation).",
+            "When finished: release Foot Pedal but keep Torch on weld puddle until it solidifies.",
+            "Close valve on TIG Torch. Turn Right Knob to OFF to turn off power to TIG Torch."
+          ]
+        }
+      ]
+    },
+    "Stick": {
+      "full_name": "Stick / SMAW (Shielded Metal Arc Welding)",
+      "polarity": "DCEP",
+      "manual_pages": {"setup": [27], "settings": [32], "welding": [28, 29, 33]},
+      "steps": [
+        {
+          "phase": "Connect Cables",
+          "steps": [
+            "Plug Ground Clamp Cable into Negative (–) Socket. Twist clockwise to lock.",
+            "Plug Electrode Holder Cable into Positive (+) Socket. Twist clockwise to lock.",
+            "Leave Wire Feed Power Cable disconnected."
+          ]
+        },
+        {
+          "phase": "Connect Power Cord",
+          "steps": [
+            "Plug 120VAC or 240VAC Power Cord into Power Input Socket. Plug will only fit one way.",
+            "WARNING: Do not plug into wall outlet at this time."
+          ]
+        },
+        {
+          "phase": "LCD Settings",
+          "steps": [
+            "Turn Power Switch to OFF, plug into GFCI protected outlet.",
+            "Set Electrode Holder down on nonconductive, nonflammable surface.",
+            "Turn Power Switch ON.",
+            "Press Home Button on Control Panel.",
+            "Turn Main Control Knob until Stick process appears on LCD.",
+            "Press Main Control Knob to select STICK.",
+            "Set Polarity — plug cables as shown on screen. No gas required.",
+            "Set Electrode Type — Turn Main Control Knob to select (60xx, 70xx).",
+            "Set Electrode Diameter (Left Knob) and Material Thickness (Right Knob).",
+            "Auto Weld Settings — Turn Left Knob to adjust output amperage. Turn Right Knob to ON to energize Electrode Holder.",
+            "WARNING: Welder is now energized and Open Circuit Voltage is present.",
+            "Optional: Hot Start (adjust amperage at start of weld), Arc Force (adjust weld penetration and smoothness), Recall/Save Settings."
+          ]
+        },
+        {
+          "phase": "Welding Technique",
+          "steps": [
+            "Place bare metal end of Stick Electrode inside jaws of Electrode Holder.",
+            "Stroke workpiece lightly to ignite arc. Methods: (a) Tap surface, (b) Stroke surface, (c) Strike like a match.",
+            "After arc ignites, lift Electrode off workpiece the same distance as Electrode diameter.",
+            "Tilt Electrode back 10 to 20 degrees.",
+            "Drag Electrode to back end of weld puddle to deposit material.",
+            "When finished, lift Electrode from workpiece, set Electrode Holder on nonconductive surface.",
+            "Turn Power Switch OFF."
+          ]
+        }
+      ]
+    }
+  }
+}
