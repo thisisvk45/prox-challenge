@@ -1564,22 +1564,18 @@ export default function Home() {
                   showVoiceToast("Voice input not supported in this browser. Use Chrome or Safari.");
                   return;
                 }
-                setHandsFree((prev) => {
-                  const next = !prev;
-                  if (next) {
-                    console.log("[Hands-free] toggled ON — starting mic");
-                    setTimeout(() => {
-                      voice.startListening((text) => {
-                        console.log("[Hands-free] speech received:", text);
-                        handleSubmitRef.current(text);
-                      });
-                    }, 100);
-                  } else {
-                    console.log("[Hands-free] toggled OFF — stopping mic");
-                    voice.stopListening();
-                  }
-                  return next;
-                });
+                const turningOn = !handsFree;
+                setHandsFree(turningOn);
+                if (turningOn) {
+                  console.log("[Hands-free] ON — starting mic now");
+                  voice.startListening((text) => {
+                    console.log("[Hands-free] speech received:", text);
+                    handleSubmitRef.current(text);
+                  });
+                } else {
+                  console.log("[Hands-free] OFF — stopping mic");
+                  voice.stopListening();
+                }
               }}
               data-tour-target="hands-free-toggle"
               className={`flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-mono transition-all ${
