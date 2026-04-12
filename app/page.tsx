@@ -867,6 +867,20 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("handsFree", String(handsFree));
     handsFreeRef.current = handsFree;
+
+    // Start listening immediately when hands-free is toggled ON
+    if (handsFree && !loading && !voice.isListening) {
+      console.log("[Hands-free] toggled ON — starting mic");
+      voice.startListening((text) => {
+        console.log("[Hands-free] initial speech received:", text);
+        handleSubmit(text);
+      });
+    }
+    // Stop listening when hands-free is toggled OFF
+    if (!handsFree && voice.isListening) {
+      console.log("[Hands-free] toggled OFF — stopping mic");
+      voice.stopListening();
+    }
   }, [handsFree]);
 
   // Persist guided mode toggle
@@ -1001,9 +1015,17 @@ export default function Home() {
 
   // Hands-free: auto-start mic after TTS finishes
   const handleTTSComplete = useCallback(() => {
+    console.log("[Hands-free] TTS complete, handsFreeRef:", handsFreeRef.current);
     if (handsFreeRef.current) {
+      console.log("[Hands-free] restarting mic after 500ms delay");
       setTimeout(() => {
+        if (!handsFreeRef.current) {
+          console.log("[Hands-free] aborted — toggled off during delay");
+          return;
+        }
+        console.log("[Hands-free] mic restarting now");
         voice.startListening((text) => {
+          console.log("[Hands-free] loop speech received:", text);
           handleSubmit(text);
         });
       }, 500);
