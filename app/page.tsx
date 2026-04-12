@@ -69,6 +69,9 @@ type Message = {
   id?: string; // unique message ID for feedback
 };
 
+// Global ref for hands-free TTS audio so it can be stopped from anywhere
+let handsFreeAudio: HTMLAudioElement | null = null;
+
 // --- Helpers ---
 
 function extractPageFromUrl(url: string): string | undefined {
@@ -530,17 +533,21 @@ function MessageBubble({
           const blob = await res.blob();
           const url = URL.createObjectURL(blob);
           const audio = new Audio(url);
+          handsFreeAudio = audio;
           audio.onended = () => {
             URL.revokeObjectURL(url);
+            handsFreeAudio = null;
             onTTSComplete?.();
           };
           audio.onerror = () => {
             URL.revokeObjectURL(url);
+            handsFreeAudio = null;
             onTTSComplete?.();
           };
           audio.play();
         } catch (err) {
           console.error("[TTS] autoSpeak fetch failed:", err);
+          handsFreeAudio = null;
           onVoiceError?.();
           onTTSComplete?.();
         }
@@ -1573,8 +1580,12 @@ export default function Home() {
                     handleSubmitRef.current(text);
                   });
                 } else {
-                  console.log("[Hands-free] OFF — stopping mic");
+                  console.log("[Hands-free] OFF — stopping mic and audio");
                   voice.stopListening();
+                  if (handsFreeAudio) {
+                    handsFreeAudio.pause();
+                    handsFreeAudio = null;
+                  }
                 }
               }}
               data-tour-target="hands-free-toggle"
