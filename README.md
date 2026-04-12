@@ -128,7 +128,9 @@ If I joined Prox on Monday, here's what I'd ship by Friday.
 
 **5. Customer-specific persona layer.** The current agent has one personality: calm, technical, garage-friendly. At scale, different products need different voices. A power tool brand wants confident and direct. A medical device brand wants careful and measured. I'd add a persona configuration layer that lets each tenant define their voice without changing the underlying agent.
 
-These five things are why I want to work at Prox. They're the product I'd build if I were running engineering.
+**6. Wake word activation for the voice loop.** Right now the user toggles Hands-free to start the voice loop. The next iteration would integrate Picovoice Porcupine for browser-based wake word detection ("Hey Vulcan") so the user never touches the screen, even to start. The current limitation is browser mic throttling on continuous listening, which Porcupine handles with on-device low-power keyword spotting. This closes the loop on the welding gloves use case completely.
+
+These six things are why I want to work at Prox. They're the product I'd build if I were running engineering.
 
 ## Run it locally
 
