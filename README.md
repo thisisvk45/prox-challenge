@@ -2,9 +2,9 @@
 
 A multimodal voice agent for the Vulcan OmniPro 220, built in one week for the Prox Founding Engineer Challenge.
 
-**Live demo:** [omnipro.helloviks.com](https://omnipro.helloviks.com) · **Video walkthrough:** [Loom link] · **Author:** [Vikas Kumar](https://helloviks.com) · [LinkedIn](https://www.linkedin.com/in/vikas-kumar45/) · vikas.applications45@gmail.com
+Live demo: [omnipro.helloviks.com](https://omnipro.helloviks.com) · Author: [Vikas Kumar](https://helloviks.com) · Winston-Salem, NC · open to relocating to SF
 
-> Most submissions answer questions. This one talks back, remembers you, diagnoses your weld photos against the manual's reference charts, walks you through setup like a senior welder standing next to you, and ships in customer-ready packaging from the first click.
+**This is not a RAG problem. It's a product and safety problem.** A welder user with dirty hands and a torch in the other hand doesn't want a chatbot. They want a colleague who knows the machine, remembers their setup, can look at their weld and diagnose it, and won't quietly give them an answer that damages their equipment. That's what I built.
 
 ---
 
@@ -14,7 +14,7 @@ A person in a garage just bought a Vulcan OmniPro 220. They don't want to read 4
 
 The welder challenge is the right test for what Prox is building. It's not a Q&A bot over a PDF. The OmniPro 220 has four welding processes, dual voltage input, polarity configurations that damage the machine if reversed, duty cycle limits that vary by amperage and voltage, and a target user who doesn't know what DCEP means. Getting this right requires structured knowledge extraction, multimodal reasoning (photos + voice + diagrams), persistent memory, and the ability to handle a confused customer without making them feel stupid. That's the Prox product.
 
-I'm Vikas Kumar. MS Business Analytics at Wake Forest, founding AI engineer at SViam.ai, with production AI work at Snap, Scale AI, Aditya Birla Group, and Lawroom AI. I read Dima's job post, recognized it as the first company building the thing I've been building toward without knowing it, and treated this challenge as a prototype of week one on the job.
+I'm Vikas Kumar. Born in Bhadohi, India. Wake Forest MS in Business Analytics, graduating May 2026. Before this I built knowledge graph-based logistics optimization at Aditya Birla Group, RLHF data curation at Scale AI, and AR ad systems at Snap. Right now I'm Founding AI Engineer at SViam.ai, building a voice-driven technical interview platform. The Prox job post showed up in my feed through Harshita's repost. I read it twice, opened the challenge repo, and recognized the exact kind of system I've been quietly building toward for years. The agent loop, the structured knowledge layer, the multimodal grounding, the customer empathy framing. All of it. This submission is the version of myself I'd hire on day one if I were running engineering at Prox.
 
 ## Try it in 30 seconds
 
@@ -41,10 +41,10 @@ I built it as a product, not a demo. Customer Mode toggle, confidence scoring on
 ![What makes this different](svg/features-grid.svg)
 
 **1. Hands-free continuous voice loop.**
-Toggle Hands-free, ask a question by voice, hear the answer in Adam's voice via ElevenLabs, and the mic auto-listens for the next question. No clicking between turns. No other submission in the pool has a closed-loop voice conversation. They have voice in or voice out, not both wired together. This matters because it IS Prox's product. The user is wearing welding gloves.
+Toggle Hands-free, ask a question by voice, hear the answer in Adam's voice via ElevenLabs, and the mic auto-listens for the next question. No clicking between turns. No other submission in the pool has a closed-loop voice conversation. They have voice in or voice out, not both wired together. This matters because it IS Prox's product. The user is wearing welding gloves. I built this first, not last, because the user is wearing welding gloves.
 
 **2. Photo diagnosis with three layers of grounding.**
-Upload a weld photo. The agent runs a structured keyword matcher (porosity, spatter, undercut boosted at +200 priority), receives the manual's diagnosis chart as base64 image bytes in the tool result, and uses Claude's vision to compare the user's photo against specific examples in the chart. Output: "your weld matches the Wire Weld-Porosity example in the top-left of page 37." Most submissions have a structured matcher OR vision. This stacks both. That's the level of multimodal grounding Prox needs to make customers trust the agent.
+Upload a weld photo. The agent runs a structured keyword matcher (porosity, spatter, undercut boosted at +200 priority), receives the manual's diagnosis chart as base64 image bytes in the tool result, and uses Claude's vision to compare the user's photo against specific examples in the chart. Output: "your weld matches the Wire Weld-Porosity example in the top-left of page 37." Most submissions have a structured matcher OR vision. This stacks both. That's the level of multimodal grounding Prox needs to make customers trust the agent. Three layers because one is brittle. Two is correct. Three is correct AND verifiable.
 
 ![Weld diagnosis showing porosity matched at 95% confidence with manual chart position reference](screenshots/weld-diagnosis-porosity.png)
 
@@ -61,7 +61,7 @@ Ask "walk me through MIG setup" and the agent enters a stateful walkthrough. Eac
 ![Guided walkthrough showing step 1 of MIG setup with manual page 8, key points, common mistakes, and validation checklist](screenshots/guided-walkthrough-step1.png)
 
 **5. Multi-agent deliberation.**
-Every query runs through three agents in coordination. A Technical Specialist generates the answer using 14 tools against the pre-extracted manual. A Safety Agent checks the response for dangerous configurations in parallel. A Quality Reviewer scores accuracy and clarity. The deliberation is visible in the expanded reasoning ribbon where the user can watch all three agents work, see tool parameters, read per-agent reasoning, and verify that three independent checks approved the response before it reached them. No other submission has multi-agent deliberation with the reasoning visible to the user.
+Every query runs through three agents in coordination. A Technical Specialist generates the answer using 14 tools against the pre-extracted manual. A Safety Agent checks the response for dangerous configurations in parallel. A Quality Reviewer scores accuracy and clarity. The deliberation is visible in the expanded reasoning ribbon where the user can watch all three agents work, see tool parameters, read per-agent reasoning, and verify that three independent checks approved the response before it reached them. No other submission has multi-agent deliberation with the reasoning visible to the user. A single-agent system is easier to ship but harder to trust. Three agents disagreeing once is more useful than one agent agreeing with itself a hundred times.
 
 ![Multi-agent deliberation flow](svg/multi-agent-deliberation.svg)
 
@@ -83,6 +83,10 @@ Four capabilities I deliberately left out of scope:
 These are not gaps in the submission. They are deliberate constraints chosen because shipping less but right beats shipping more but fragile.
 
 ## Architecture at a glance
+
+![End-to-end single query flow](svg/single-query-flow.svg)
+
+What happens on every query: user input flows through the Technical Specialist, response gets validated by Safety and Quality in parallel, final response surfaces with all warnings visible.
 
 ![Architecture diagram](svg/architecture.svg)
 

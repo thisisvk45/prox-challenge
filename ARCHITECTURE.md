@@ -2,6 +2,14 @@
 
 Technical reference for the Vulcan OmniPro 220 support agent. This document covers the knowledge base, agent loop, tool system, artifact rendering, memory layer, voice pipeline, and frontend. Every claim is backed by a file path and a line count.
 
+The system in five lines:
+
+- Deterministic structured knowledge base. No RAG. No vector store. No embeddings.
+- 14 tools for grounded lookups, all reading from pre-extracted JSON.
+- SSE streaming with auto-emitted artifacts. Six tools render UI without a second model turn.
+- Post-hoc multi-agent validation. Safety and Quality reviewers run in parallel after the Technical Specialist.
+- No backend database. localStorage only. Two API keys (Anthropic + ElevenLabs).
+
 ## System overview
 
 The system has four layers. Each one is small enough to hold in your head.
@@ -24,6 +32,8 @@ Total application code: roughly 10,000 lines of TypeScript across 30 files. No e
 Every number in this document (file sizes, line counts, tool counts, latencies, costs) was measured against the actual codebase and the actual production deployment, not estimated. If you find a discrepancy, the codebase is the source of truth and this document is wrong. File an issue and I will fix it.
 
 ## Knowledge base
+
+The architectural opinion underneath everything in this document: **probabilistic retrieval is not acceptable for safety-critical systems.** Reversed polarity damages the welder. Wrong duty cycle overheats it. Hallucinated specs injure the user. Every design choice in the knowledge base, the tool layer, and the multi-agent validation flows from this single principle.
 
 The 48-page Vulcan OmniPro 220 owner's manual was pre-extracted into structured JSON at build time. This is not runtime RAG. Every fact has a known type, a known shape, and a known file. The agent reads from these files through typed tool lookups. It cannot hallucinate a duty cycle because the duty cycle data only exists in `kb/duty_cycles.json`, and the only way to access it is through `lookup_duty_cycle`.
 
@@ -232,6 +242,10 @@ A single-agent system is easier to ship but harder to trust. Every claim the age
 The hard part was preventing the reviewer agents from hallucinating issues on correct answers. Early versions of the Safety Agent kept flagging correct duty cycle numbers as inaccurate, and early versions of the Quality Reviewer kept scoring good responses low because they were short. The fix was to tighten both system prompts to explicitly defer to the Technical Specialist on facts and only flag genuine issues. After this fix, the deliberation layer approves well-formed responses cleanly and only raises flags on actual problems.
 
 ![Multi-agent orchestration diagram](svg/multi-agent-orchestration.svg)
+
+![End-to-end single query flow](svg/single-query-flow.svg)
+
+What happens on every query: user input flows through the Technical Specialist, response gets validated by Safety and Quality in parallel, final response surfaces with all warnings visible.
 
 ## Artifact system
 
