@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" style="background:#ffffff;font-family:'Inter',system-ui,sans-serif;">
+
+  <!-- Filters -->
+  <defs>
+    <filter id="shadow-soft" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.08"/>
+    </filter>
+    <filter id="shadow-subtle" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="1" stdDeviation="3" flood-color="#000000" flood-opacity="0.06"/>
+    </filter>
+    <marker id="arrowhead-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#d97757"/>
+    </marker>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- TITLE BLOCK                                     -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <text x="600" y="55" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="28" fill="#0a0e27">Multi-agent deliberation</text>
+  <rect x="570" y="80" width="60" height="2" rx="1" fill="#d97757"/>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- USER QUERY BOX                                  -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <rect x="500" y="120" width="200" height="60" rx="12" fill="#ffffff" stroke="#0a0e27" stroke-width="1.5" filter="url(#shadow-subtle)"/>
+  <text x="600" y="152" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="16" fill="#0a0e27">User query</text>
+  <text x="600" y="170" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="11" fill="#6a6a7a">text, voice, or photo</text>
+
+  <!-- Arrow: User Query → Technical Specialist -->
+  <line x1="600" y1="182" x2="600" y2="219" stroke="#d97757" stroke-width="2" marker-end="url(#arrowhead-orange)"/>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- TECHNICAL SPECIALIST BOX                        -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <rect x="400" y="222" width="400" height="110" rx="12" fill="#ffffff" stroke="#d97757" stroke-width="2" filter="url(#shadow-soft)"/>
+  <text x="600" y="258" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="18" fill="#0a0e27">Technical Specialist</text>
+  <text x="600" y="282" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="12" fill="#6a6a7a">14 tools, vision, memory, streaming response</text>
+  <text x="600" y="308" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="11" fill="#9a9a9a">Generates the user-facing response</text>
+
+  <!-- Phase 1 label (right of Technical Specialist) -->
+  <text x="820" y="270" text-anchor="start" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#d97757">Phase 1</text>
+  <text x="820" y="286" text-anchor="start" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="11" fill="#6a6a7a">Technical Analysis</text>
+
+  <!-- Arrow: Technical Specialist → bottom agents -->
+  <line x1="600" y1="332" x2="600" y2="369" stroke="#d97757" stroke-width="2" marker-end="url(#arrowhead-orange)"/>
+  <text x="610" y="352" text-anchor="start" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="10" font-style="italic" fill="#9a9a9a">response text passed in parallel</text>
+
+  <!-- Fork lines from center to Safety Agent and Quality Reviewer -->
+  <!-- Horizontal fork bar -->
+  <line x1="360" y1="369" x2="840" y2="369" stroke="#d97757" stroke-width="1.5"/>
+  <!-- Down to Safety Agent -->
+  <line x1="360" y1="369" x2="360" y2="372" stroke="#d97757" stroke-width="1.5"/>
+  <!-- Down to Quality Reviewer -->
+  <line x1="840" y1="369" x2="840" y2="372" stroke="#d97757" stroke-width="1.5"/>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- PHASE 2 LABEL                                   -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <text x="350" y="362" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#d97757">Phase 2</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SAFETY AGENT BOX                                -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <rect x="200" y="372" width="320" height="110" rx="12" fill="#ffffff" stroke="#0a0e27" stroke-width="1.5" filter="url(#shadow-subtle)"/>
+  <text x="360" y="408" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="16" fill="#0a0e27">Safety Agent</text>
+  <text x="360" y="432" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="12" fill="#6a6a7a">Dangerous configs, missing warnings</text>
+  <text x="360" y="458" text-anchor="middle" font-family="'Courier New',Courier,monospace" font-size="11" fill="#9a9a9a">{ safe, warnings, critical_issues }</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- PHASE 3 LABEL                                   -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <text x="840" y="362" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#d97757">Phase 3</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- QUALITY REVIEWER BOX                            -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <rect x="680" y="372" width="320" height="110" rx="12" fill="#ffffff" stroke="#0a0e27" stroke-width="1.5" filter="url(#shadow-subtle)"/>
+  <text x="840" y="408" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="16" fill="#0a0e27">Quality Reviewer</text>
+  <text x="840" y="432" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="12" fill="#6a6a7a">Accuracy, clarity, completeness</text>
+  <text x="840" y="458" text-anchor="middle" font-family="'Courier New',Courier,monospace" font-size="11" fill="#9a9a9a">{ approved, scores, suggestion }</text>
+
+  <!-- Dashed horizontal connector between the two bottom boxes -->
+  <line x1="520" y1="427" x2="680" y2="427" stroke="#d97757" stroke-width="1" stroke-dasharray="4 4"/>
+
+  <!-- Parallel badge pill -->
+  <rect x="556" y="410" width="88" height="22" rx="11" fill="#d97757"/>
+  <text x="600" y="425" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="600" font-size="10" fill="#ffffff">parallel</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- BOTTOM DIVIDER + SYNTHESIS NOTE                 -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <line x1="200" y1="500" x2="1000" y2="500" stroke="#e5e5e5" stroke-width="1"/>
+  <text x="600" y="522" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="12" fill="#6a6a7a">Safety warnings prepend the response. Quality flags append a footer. User sees the approved response with all warnings visible.</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- BOTTOM CREDIT                                   -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <text x="600" y="575" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="10" fill="#9a9a9a">vikas kumar · prox founding engineer challenge</text>
+
+</svg>

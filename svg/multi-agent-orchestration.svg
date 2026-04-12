@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <defs>
+    <style>
+      text { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    </style>
+    <filter id="sf" x="-8%" y="-8%" width="130%" height="135%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0a0e27" flood-opacity="0.07"/>
+    </filter>
+    <filter id="sf2" x="-8%" y="-8%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#d97757" flood-opacity="0.13"/>
+    </filter>
+    <filter id="sf3" x="-5%" y="-5%" width="125%" height="135%">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#0a0e27" flood-opacity="0.09"/>
+    </filter>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="7.5" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#d97757"/>
+    </marker>
+    <marker id="arr2" markerWidth="7" markerHeight="5" refX="6.5" refY="2.5" orient="auto">
+      <polygon points="0 0, 7 2.5, 0 5" fill="#d97757"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="900" fill="#ffffff"/>
+
+  <!-- TITLE -->
+  <text x="600" y="56" text-anchor="middle" font-weight="700" font-size="28" fill="#0a0e27">Multi-agent orchestration</text>
+  <rect x="570" y="79" width="60" height="2" rx="1" fill="#d97757"/>
+
+  <!-- COLUMN HEADERS -->
+  <text x="180" y="130" text-anchor="middle" font-weight="700" font-size="14" fill="#d97757">Input</text>
+  <text x="600" y="130" text-anchor="middle" font-weight="700" font-size="14" fill="#d97757">Technical Specialist</text>
+  <text x="1000" y="130" text-anchor="middle" font-weight="700" font-size="14" fill="#d97757">Parallel Review</text>
+
+  <!-- STAGE 1 INPUT BOX -->
+  <rect x="60" y="160" width="240" height="185" rx="10" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" filter="url(#sf)"/>
+  <text x="180" y="188" text-anchor="middle" font-weight="700" font-size="13" fill="#0a0e27">User message</text>
+
+  <!-- text/doc icon -->
+  <rect x="128" y="202" width="18" height="22" rx="2" fill="none" stroke="#d97757" stroke-width="1.4"/>
+  <line x1="131" y1="208" x2="143" y2="208" stroke="#d97757" stroke-width="1.2"/>
+  <line x1="131" y1="212" x2="143" y2="212" stroke="#d97757" stroke-width="1.2"/>
+  <line x1="131" y1="216" x2="139" y2="216" stroke="#d97757" stroke-width="1.2"/>
+  <!-- mic icon -->
+  <rect x="171" y="202" width="10" height="14" rx="5" fill="none" stroke="#d97757" stroke-width="1.4"/>
+  <path d="M167,213 Q167,221 176,221 Q185,221 185,213" fill="none" stroke="#d97757" stroke-width="1.4"/>
+  <line x1="176" y1="221" x2="176" y2="224" stroke="#d97757" stroke-width="1.4"/>
+  <!-- camera icon -->
+  <rect x="206" y="204" width="20" height="14" rx="2" fill="none" stroke="#d97757" stroke-width="1.4"/>
+  <circle cx="216" cy="211" r="3.5" fill="none" stroke="#d97757" stroke-width="1.2"/>
+  <rect x="209" y="202" width="5" height="3" rx="1" fill="none" stroke="#d97757" stroke-width="1.2"/>
+
+  <line x1="75" y1="236" x2="285" y2="236" stroke="#e5e5e5" stroke-width="1"/>
+  <text x="180" y="256" text-anchor="middle" font-size="12" fill="#9a9a9a">Memory context</text>
+  <text x="180" y="274" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, 'Courier New', monospace" font-size="9.5" fill="#b5b5b5">{voltage, process, material...}</text>
+  <text x="180" y="314" text-anchor="middle" font-size="12" fill="#9a9a9a">Conversation history</text>
+
+  <!-- ARROW Stage 1 to Stage 2 -->
+  <line x1="301" y1="252" x2="396" y2="252" stroke="#d97757" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- STAGE 2 TECHNICAL SPECIALIST BOX -->
+  <rect x="400" y="160" width="400" height="500" rx="12" fill="#fff8f5" stroke="#d97757" stroke-width="2" filter="url(#sf2)"/>
+  <text x="600" y="198" text-anchor="middle" font-weight="700" font-size="14" fill="#0a0e27">Agent loop (up to 12 turns)</text>
+
+  <!-- Step 1 -->
+  <rect x="422" y="212" width="356" height="36" rx="5" fill="#ffede0" stroke="#d97757" stroke-width="1"/>
+  <text x="600" y="235" text-anchor="middle" font-size="11.5" fill="#0a0e27">1. Call claude-sonnet-4-20250514 with 14 tools</text>
+
+  <!-- Step 2 -->
+  <rect x="422" y="257" width="356" height="36" rx="5" fill="#ffede0" stroke="#d97757" stroke-width="1"/>
+  <text x="600" y="280" text-anchor="middle" font-size="11.5" fill="#0a0e27">2. Stream text tokens via SSE</text>
+
+  <!-- Step 3 -->
+  <rect x="422" y="302" width="356" height="36" rx="5" fill="#ffede0" stroke="#d97757" stroke-width="1"/>
+  <text x="600" y="325" text-anchor="middle" font-size="11.5" fill="#0a0e27">3. Execute tool calls in parallel</text>
+
+  <!-- Step 4 -->
+  <rect x="422" y="347" width="356" height="36" rx="5" fill="#ffede0" stroke="#d97757" stroke-width="1"/>
+  <text x="600" y="370" text-anchor="middle" font-size="11.5" fill="#0a0e27">4. Auto-emit artifacts from 6 specific tools</text>
+
+  <!-- Step 5 — emphasized -->
+  <rect x="422" y="392" width="356" height="44" rx="5" fill="#ffede0" stroke="#d97757" stroke-width="2.2"/>
+  <text x="600" y="411" text-anchor="middle" font-weight="600" font-size="11.5" fill="#0a0e27">5. Accumulate all text into</text>
+  <text x="600" y="430" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, 'Courier New', monospace" font-size="10.5" fill="#d97757">technicalResponseText</text>
+
+  <!-- Step 6 -->
+  <rect x="422" y="445" width="356" height="36" rx="5" fill="#ffede0" stroke="#d97757" stroke-width="1"/>
+  <text x="600" y="468" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, 'Courier New', monospace" font-size="10.5" fill="#0a0e27">6. loop until stop_reason !== tool_use</text>
+
+  <text x="600" y="516" text-anchor="middle" font-style="italic" font-size="12" fill="#6a6a7a">Output: full response text + artifacts</text>
+  <text x="600" y="550" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, 'Courier New', monospace" font-size="11" fill="#d97757">&#x2193; technicalResponseText passed to reviewers &#x2193;</text>
+  <text x="600" y="582" text-anchor="middle" font-size="10" fill="#9a9a9a">Streaming: first token &lt;2s. Total: 8&#x2013;30s depending on tool count.</text>
+
+  <!-- FORK ARROWS Stage 2 to Stage 3 -->
+  <path d="M802,390 C830,390 830,292 858,292" fill="none" stroke="#d97757" stroke-width="2" marker-end="url(#arr2)"/>
+  <path d="M802,460 C830,460 830,618 858,618" fill="none" stroke="#d97757" stroke-width="2" marker-end="url(#arr2)"/>
+
+  <!-- Parallel label -->
+  <text transform="translate(844,430) rotate(-90)" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, 'Courier New', monospace" font-size="9.5" fill="#d97757">parallel via Promise.all</text>
+
+  <!-- SAFETY AGENT -->
+  <rect x="860" y="195" width="280" height="200" rx="10" fill="#ffffff" stroke="#0a0e27" stroke-width="1.5" filter="url(#sf3)"/>
+  <text x="1000" y="224" text-anchor="middle" font-weight="700" font-size="15" fill="#0a0e27">Safety Agent</text>
+  <text x="1000" y="243" text-anchor="middle" font-size="10" fill="#d97757">Phase 2</text>
+  <line x1="876" y1="255" x2="1124" y2="255" stroke="#e5e5e5" stroke-width="1"/>
+  <text x="884" y="276" font-size="11" fill="#3a3a4a">&#x2022; Dangerous polarity</text>
+  <text x="884" y="295" font-size="11" fill="#3a3a4a">&#x2022; Missing warnings</text>
+  <text x="884" y="314" font-size="11" fill="#3a3a4a">&#x2022; Spool gun omissions</text>
+  <text x="1000" y="344" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, 'Courier New', monospace" font-size="10" fill="#9a9a9a">no tools | ~1.5s | $0.01</text>
+  <rect x="920" y="358" width="160" height="22" rx="11" fill="#d97757"/>
+  <text x="1000" y="373" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, 'Courier New', monospace" font-size="10" fill="#ffffff">&#x2192; { safe, warnings }</text>
+
+  <!-- QUALITY REVIEWER -->
+  <rect x="860" y="520" width="280" height="200" rx="10" fill="#ffffff" stroke="#0a0e27" stroke-width="1.5" filter="url(#sf3)"/>
+  <text x="1000" y="549" text-anchor="middle" font-weight="700" font-size="15" fill="#0a0e27">Quality Reviewer</text>
+  <text x="1000" y="568" text-anchor="middle" font-size="10" fill="#d97757">Phase 3</text>
+  <line x1="876" y1="580" x2="1124" y2="580" stroke="#e5e5e5" stroke-width="1"/>
+  <text x="884" y="601" font-size="11" fill="#3a3a4a">&#x2022; Accuracy score</text>
+  <text x="884" y="620" font-size="11" fill="#3a3a4a">&#x2022; Clarity score</text>
+  <text x="884" y="639" font-size="11" fill="#3a3a4a">&#x2022; Completeness</text>
+  <text x="1000" y="669" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, 'Courier New', monospace" font-size="10" fill="#9a9a9a">no tools | ~1.8s | $0.01</text>
+  <rect x="910" y="683" width="180" height="22" rx="11" fill="#d97757"/>
+  <text x="1000" y="698" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, 'Courier New', monospace" font-size="10" fill="#ffffff">&#x2192; { approved, scores }</text>
+
+  <!-- BOTTOM DIVIDER -->
+  <line x1="40" y1="742" x2="1160" y2="742" stroke="#e5e5e5" stroke-width="1"/>
+
+  <!-- SYNTHESIS -->
+  <text x="600" y="765" text-anchor="middle" font-weight="700" font-size="14" fill="#d97757">Synthesis and output</text>
+  <text x="600" y="790" text-anchor="middle" font-size="11" fill="#6a6a7a">Critical issues prepend red banner. Warnings append yellow caution. Low scores append &#x2018;verify against manual&#x2019; footer.</text>
+  <text x="600" y="808" text-anchor="middle" font-size="11" fill="#6a6a7a">Suggestions logged silently for expanded reasoning ribbon. Safety warnings always user-visible regardless of Customer Mode.</text>
+
+  <!-- CREDIT -->
+  <text x="600" y="851" text-anchor="middle" font-size="10" fill="#9a9a9a">Every claim in this diagram is backed by a file path and a line count.</text>
+  <text x="600" y="867" text-anchor="middle" font-size="10" fill="#9a9a9a">vikas kumar &#xB7; prox founding engineer challenge</text>
+</svg>

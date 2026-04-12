@@ -1,0 +1,167 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0a0e27" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#ffffff"/>
+
+  <!-- Header -->
+  <text x="600" y="65"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="32" font-weight="700" fill="#0a0e27"
+    text-anchor="middle">Five things that set this apart</text>
+  <rect x="570" y="88" width="60" height="2" fill="#d97757"/>
+
+  <!-- ===================== CARD 1: Hands-Free Voice Loop ===================== -->
+  <rect x="80" y="160" width="340" height="270" rx="12" ry="12" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" filter="url(#shadow)"/>
+  <!-- Microphone icon centered at (260, 220) -->
+  <!-- Capsule body -->
+  <rect x="244" y="198" width="32" height="44" rx="16" fill="none" stroke="#d97757" stroke-width="2"/>
+  <!-- Stand / neck -->
+  <line x1="260" y1="242" x2="260" y2="254" stroke="#d97757" stroke-width="2" stroke-linecap="round"/>
+  <!-- Base -->
+  <path d="M250 254 L270 254" stroke="#d97757" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- Sound wave left -->
+  <path d="M236 212 Q230 220 236 228" stroke="#d97757" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M230 207 Q220 220 230 233" stroke="#d97757" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Sound wave right -->
+  <path d="M284 212 Q290 220 284 228" stroke="#d97757" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M290 207 Q300 220 290 233" stroke="#d97757" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Title -->
+  <text x="260" y="284"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="16" font-weight="700" fill="#0a0e27" text-anchor="middle">Hands-Free Voice Loop</text>
+  <!-- Description -->
+  <text x="260" y="314"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="12" font-weight="400" fill="#6a6a7a" text-anchor="middle">Talk to it, hear answers in Adam's voice,</text>
+  <text x="260" y="332"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="12" font-weight="400" fill="#6a6a7a" text-anchor="middle">ask the next question — no clicking required.</text>
+
+  <!-- ===================== CARD 2: Photo Diagnosis ===================== -->
+  <rect x="440" y="160" width="340" height="270" rx="12" ry="12" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" filter="url(#shadow)"/>
+  <!-- Camera icon centered at (620, 220) -->
+  <!-- Body -->
+  <rect x="597" y="204" width="46" height="36" rx="4" fill="none" stroke="#d97757" stroke-width="2"/>
+  <!-- Lens circle -->
+  <circle cx="620" cy="222" r="11" fill="none" stroke="#d97757" stroke-width="2"/>
+  <circle cx="620" cy="222" r="5" fill="none" stroke="#d97757" stroke-width="1.5"/>
+  <!-- Viewfinder bump -->
+  <path d="M612 204 L612 198 L628 198 L628 204" fill="none" stroke="#d97757" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Small corner detail -->
+  <rect x="606" y="212" width="5" height="5" rx="1" fill="#d97757" opacity="0.4"/>
+  <!-- Title -->
+  <text x="620" y="284"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="16" font-weight="700" fill="#0a0e27" text-anchor="middle">Photo Diagnosis</text>
+  <!-- Description -->
+  <text x="620" y="314"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="12" font-weight="400" fill="#6a6a7a" text-anchor="middle">Three-layer grounding: structured matcher,</text>
+  <text x="620" y="332"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="12" font-weight="400" fill="#6a6a7a" text-anchor="middle">image-bytes-as-tool-results, chart positions.</text>
+
+  <!-- ===================== CARD 3: Memory Across Sessions ===================== -->
+  <rect x="800" y="160" width="340" height="270" rx="12" ry="12" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" filter="url(#shadow)"/>
+  <!-- Brain icon centered at (980, 220) -->
+  <!-- Left lobe -->
+  <path d="M980 238 C960 238 950 228 950 218 C950 206 958 198 968 198 C970 190 976 186 980 186"
+    fill="none" stroke="#d97757" stroke-width="2" stroke-linecap="round"/>
+  <!-- Right lobe -->
+  <path d="M980 238 C1000 238 1010 228 1010 218 C1010 206 1002 198 992 198 C990 190 984 186 980 186"
+    fill="none" stroke="#d97757" stroke-width="2" stroke-linecap="round"/>
+  <!-- Center connector top -->
+  <line x1="980" y1="186" x2="980" y2="196" stroke="#d97757" stroke-width="2" stroke-linecap="round"/>
+  <!-- Center connector mid -->
+  <line x1="968" y1="218" x2="992" y2="218" stroke="#d97757" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 3"/>
+  <!-- Bottom base -->
+  <path d="M965 238 Q980 244 995 238" fill="none" stroke="#d97757" stroke-width="2" stroke-linecap="round"/>
+  <!-- Title -->
+  <text x="980" y="284"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="16" font-weight="700" fill="#0a0e27" text-anchor="middle">Memory Across Sessions</text>
+  <!-- Description -->
+  <text x="980" y="314"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="12" font-weight="400" fill="#6a6a7a" text-anchor="middle">Returning users get personalized answers</text>
+  <text x="980" y="332"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="12" font-weight="400" fill="#6a6a7a" text-anchor="middle">without re-explaining their setup.</text>
+
+  <!-- ===================== CARD 4: Guided Walkthroughs ===================== -->
+  <rect x="80" y="460" width="340" height="270" rx="12" ry="12" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" filter="url(#shadow)"/>
+  <!-- Checklist icon centered at (260, 520) -->
+  <!-- List lines -->
+  <line x1="240" y1="503" x2="280" y2="503" stroke="#d97757" stroke-width="2" stroke-linecap="round"/>
+  <line x1="240" y1="516" x2="275" y2="516" stroke="#d97757" stroke-width="2" stroke-linecap="round"/>
+  <line x1="240" y1="529" x2="278" y2="529" stroke="#d97757" stroke-width="2" stroke-linecap="round"/>
+  <line x1="240" y1="542" x2="270" y2="542" stroke="#d97757" stroke-width="2" stroke-linecap="round"/>
+  <!-- Checkmarks on left -->
+  <path d="M228 500 L231 503 L236 497" fill="none" stroke="#d97757" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M228 513 L231 516 L236 510" fill="none" stroke="#d97757" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M228 526 L231 529 L236 523" fill="none" stroke="#d97757" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M228 539 L231 542 L236 536" fill="none" stroke="#d97757" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Outer frame -->
+  <rect x="222" y="492" width="64" height="58" rx="5" fill="none" stroke="#d97757" stroke-width="1.5" opacity="0.35"/>
+  <!-- Title -->
+  <text x="260" y="584"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="16" font-weight="700" fill="#0a0e27" text-anchor="middle">Guided Walkthroughs</text>
+  <!-- Description -->
+  <text x="260" y="614"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="12" font-weight="400" fill="#6a6a7a" text-anchor="middle">Step-by-step setup with mistake prevention</text>
+  <text x="260" y="632"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="12" font-weight="400" fill="#6a6a7a" text-anchor="middle">and validation checklists.</text>
+
+  <!-- ===================== CARD 5: Customer-Ready Packaging ===================== -->
+  <rect x="440" y="460" width="340" height="270" rx="12" ry="12" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" filter="url(#shadow)"/>
+  <!-- Shield with checkmark, centered at (620, 520) -->
+  <!-- Shield outline -->
+  <path d="M620 492 L642 500 L642 520 C642 535 632 545 620 550 C608 545 598 535 598 520 L598 500 Z"
+    fill="none" stroke="#d97757" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Checkmark inside -->
+  <path d="M611 521 L617 527 L630 512" fill="none" stroke="#d97757" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Title -->
+  <text x="620" y="584"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="16" font-weight="700" fill="#0a0e27" text-anchor="middle">Customer-Ready Packaging</text>
+  <!-- Description -->
+  <text x="620" y="614"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="12" font-weight="400" fill="#6a6a7a" text-anchor="middle">Customer Mode toggle. Confidence scoring.</text>
+  <text x="620" y="632"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="12" font-weight="400" fill="#6a6a7a" text-anchor="middle">Graceful failure. Onboarding tour.</text>
+
+  <!-- ===================== CARD 6: Badge Card (orange) ===================== -->
+  <rect x="800" y="460" width="340" height="270" rx="12" ry="12" fill="#d97757" stroke="#c96a44" stroke-width="1" filter="url(#shadow)"/>
+  <!-- Target / bullseye icon centered at (980, 510), white outline, 40x40 -->
+  <circle cx="980" cy="510" r="20" fill="none" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="980" cy="510" r="12" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="980" cy="510" r="5" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="980" cy="510" r="2" fill="#ffffff"/>
+  <!-- Title -->
+  <text x="980" y="566"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle">Built for Prox</text>
+  <!-- Subtitle -->
+  <text x="980" y="596"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="13" font-weight="400" fill="rgba(255,255,255,0.75)" text-anchor="middle">Founding Engineer Challenge</text>
+  <!-- Arrow -->
+  <text x="980" y="660"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="18" font-weight="400" fill="#ffffff" text-anchor="middle">→</text>
+
+  <!-- Bottom credit -->
+  <text x="600" y="765"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="11" font-weight="400" fill="#9a9a9a" text-anchor="middle">vikas kumar · prox founding engineer challenge</text>
+</svg>
