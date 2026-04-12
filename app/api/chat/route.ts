@@ -6,7 +6,7 @@ export const maxDuration = 120;
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { message, image } = body as { message?: string; image?: string };
+  const { message, image, guided_mode, user_memory_context } = body as { message?: string; image?: string; guided_mode?: boolean; user_memory_context?: string };
 
   if (!message && !image) {
     return Response.json({ error: "Missing 'message' or 'image' field" }, { status: 400 });
@@ -70,6 +70,7 @@ export async function POST(request: Request) {
         let totalOutputTokens = 0;
         let totalToolCalls = 0;
         const startMs = Date.now();
+        const toolsUsed: string[] = [];
 
         while (turns < maxTurns) {
           turns++;
@@ -77,7 +78,7 @@ export async function POST(request: Request) {
           const response = await client.messages.create({
             model: "claude-sonnet-4-20250514",
             max_tokens: 8192,
-            system: SYSTEM_PROMPT,
+            system: SYSTEM_PROMPT.replace("{user_memory_context}", user_memory_context || "No previous context — this is a new user.") + (guided_mode ? "\n\n[CONTEXT: The user has Guided Mode enabled. Prefer guided walkthroughs over plain text for any setup or procedure questions.]" : ""),
             tools: TOOL_DEFINITIONS,
             messages,
           });
@@ -93,12 +94,14 @@ export async function POST(request: Request) {
             input: Record<string, unknown>;
           }> = [];
 
+          let turnReasoningText = "";
           for (const block of response.content) {
             if (block.type === "text") {
               send("text", { text: block.text });
+              turnReasoningText += block.text + " ";
             } else if (block.type === "tool_use") {
               const toolName = block.name;
-              send("tool_call", { name: toolName, input: block.input });
+              send("tool_call", { name: toolName, input: block.input, reasoning: turnReasoningText.trim() || undefined });
               totalToolCalls++;
               toolUses.push({
                 id: block.id,
@@ -116,8 +119,26 @@ export async function POST(request: Request) {
           // Execute all tool calls and build tool results
           const toolResults: Anthropic.Messages.ToolResultBlockParam[] =
             await Promise.all(
-              toolUses.map(async (tu) => {
-                const result = await handleToolCall(tu.name, tu.input);
+              toolUses.map(async (tu, idx) => {
+                const stepNumber = totalToolCalls - toolUses.length + idx + 1;
+                const toolStartMs = Date.now();
+                let result: any;
+                try {
+                  result = await handleToolCall(tu.name, tu.input);
+                } catch (toolErr: any) {
+                  const durationMs = Date.now() - toolStartMs;
+                  send("reasoning_step", {
+                    step_number: stepNumber,
+                    tool_name: tu.name,
+                    input_params: tu.input,
+                    result_summary: `Error: ${toolErr.message || "Tool execution failed"}`,
+                    duration_ms: durationMs,
+                  });
+                  const errMsg = JSON.stringify({ error: true, message: toolErr.message || "Tool execution failed", recovery_suggestion: "Try rephrasing your question or ask about a different aspect." });
+                  return { type: "tool_result" as const, tool_use_id: tu.id, content: errMsg } as Anthropic.Messages.ToolResultBlockParam;
+                }
+                const durationMs = Date.now() - toolStartMs;
+                toolsUsed.push(tu.name);
 
                 // Determine text content for event emission
                 // result is either a string or an array of content blocks
@@ -125,6 +146,20 @@ export async function POST(request: Request) {
                 const textContent = isMultiModal
                   ? (result.find((b: any) => b.type === "text") as any)?.text || ""
                   : result;
+
+                // Emit reasoning step with result summary
+                try {
+                  const summary = typeof textContent === "string" && textContent.length > 200
+                    ? textContent.slice(0, 200) + "..."
+                    : textContent;
+                  send("reasoning_step", {
+                    step_number: stepNumber,
+                    tool_name: tu.name,
+                    input_params: tu.input,
+                    result_summary: typeof summary === "string" ? summary : "Result returned",
+                    duration_ms: durationMs,
+                  });
+                } catch { /* non-fatal */ }
 
                 // Emit dedicated artifact event when render_artifact executes
                 if (tu.name === "render_artifact") {
@@ -187,6 +222,48 @@ export async function POST(request: Request) {
                   } catch { /* non-fatal */ }
                 }
 
+                // Auto-emit guided walkthrough artifact
+                if (tu.name === "start_guided_walkthrough") {
+                  try {
+                    const parsed = JSON.parse(textContent);
+                    if (parsed.steps && parsed.steps.length > 0) {
+                      send("artifact", {
+                        artifact_type: "guided_walkthrough",
+                        title: parsed.title || "Guided Walkthrough",
+                        data: {
+                          walkthrough_id: parsed.walkthrough_id,
+                          title: parsed.title,
+                          total_steps: parsed.total_steps,
+                          estimated_minutes: parsed.estimated_minutes,
+                          steps: parsed.steps,
+                        },
+                      });
+                    }
+                  } catch { /* non-fatal */ }
+                }
+
+                // Emit memory_update for extract_user_state calls
+                if (tu.name === "extract_user_state") {
+                  send("memory_update", tu.input);
+                }
+
+                // Auto-emit video recommendation artifact
+                if (tu.name === "find_relevant_videos") {
+                  try {
+                    const parsed = JSON.parse(textContent);
+                    if (parsed.videos && parsed.videos.length > 0) {
+                      send("artifact", {
+                        artifact_type: "video_recommendation",
+                        title: "Video Recommendations",
+                        data: {
+                          videos: parsed.videos,
+                          context_topic: parsed.query || tu.input.query_topic || "",
+                        },
+                      });
+                    }
+                  } catch { /* non-fatal */ }
+                }
+
                 // For multi-modal results (content block arrays), pass as
                 // structured content so Anthropic receives image blocks as vision input
                 return {
@@ -201,6 +278,14 @@ export async function POST(request: Request) {
           messages.push({ role: "assistant", content: response.content });
           messages.push({ role: "user", content: toolResults });
         }
+
+        // Compute confidence level based on tools used
+        const structuredTools = ["lookup_spec", "lookup_duty_cycle", "lookup_polarity", "lookup_troubleshooting", "lookup_selection_chart", "lookup_weld_diagnosis", "search_procedures"];
+        const semanticTools = ["diagnose_weld_photo", "annotate_machine_photo", "find_relevant_videos", "get_manual_image"];
+        const hasStructured = toolsUsed.some(t => structuredTools.includes(t));
+        const hasSemantic = toolsUsed.some(t => semanticTools.includes(t));
+        const confidence = hasStructured ? "high" : hasSemantic ? "medium" : "low";
+        send("confidence", { level: confidence });
 
         // Sonnet 4.5 pricing: $3/M input, $15/M output
         const costUsd = (totalInputTokens * 3 + totalOutputTokens * 15) / 1_000_000;

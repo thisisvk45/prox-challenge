@@ -7,6 +7,8 @@ import { SettingsConfigurator } from "./artifacts/SettingsConfigurator";
 import { SelectionMatrix } from "./artifacts/SelectionMatrix";
 import { WeldDiagnosisResult } from "./artifacts/WeldDiagnosisResult";
 import { MachinePhotoAnnotation } from "./artifacts/MachinePhotoAnnotation";
+import { GuidedWalkthrough } from "./artifacts/GuidedWalkthrough";
+import { VideoRecommendation } from "./artifacts/VideoRecommendation";
 import { Badge } from "./ui/badge";
 
 export type ArtifactPayload = {
@@ -15,7 +17,7 @@ export type ArtifactPayload = {
   data: Record<string, unknown>;
 };
 
-export function ArtifactRenderer({ artifact }: { artifact: ArtifactPayload }) {
+export function ArtifactRenderer({ artifact, onCitationClick, onSendMessage }: { artifact: ArtifactPayload; onCitationClick?: (page: number) => void; onSendMessage?: (msg: string) => void }) {
   const { artifact_type, data } = artifact;
 
   switch (artifact_type) {
@@ -48,6 +50,7 @@ export function ArtifactRenderer({ artifact }: { artifact: ArtifactPayload }) {
       return (
         <SettingsConfigurator
           process={data.process as "MIG" | "Flux-Cored" | "TIG" | "Stick" | undefined}
+          onSendMessage={onSendMessage}
         />
       );
 
@@ -63,6 +66,7 @@ export function ArtifactRenderer({ artifact }: { artifact: ArtifactPayload }) {
       return (
         <SettingsConfigurator
           process={data.process as "MIG" | "Flux-Cored" | "TIG" | "Stick" | undefined}
+          onSendMessage={onSendMessage}
         />
       );
 
@@ -83,6 +87,26 @@ export function ArtifactRenderer({ artifact }: { artifact: ArtifactPayload }) {
           user_image_url={data.user_image_url as string}
           view_type={(data.view_type as string) || "general"}
           annotations={(data.annotations as any[]) || []}
+        />
+      );
+
+    case "guided_walkthrough":
+      return (
+        <GuidedWalkthrough
+          walkthrough_id={(data.walkthrough_id as string) || ""}
+          title={(data.title as string) || "Walkthrough"}
+          total_steps={(data.total_steps as number) || (data.steps as any[])?.length || 0}
+          estimated_minutes={(data.estimated_minutes as number) || 10}
+          steps={(data.steps as any[]) || []}
+          onCitationClick={onCitationClick}
+        />
+      );
+
+    case "video_recommendation":
+      return (
+        <VideoRecommendation
+          videos={(data.videos as any[]) || []}
+          context_topic={(data.context_topic as string) || (data.query as string) || ""}
         />
       );
 

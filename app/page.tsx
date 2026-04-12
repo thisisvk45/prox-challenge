@@ -6,30 +6,48 @@ import remarkGfm from "remark-gfm";
 import rehypeUnwrapImages from "rehype-unwrap-images";
 import { ManualImage } from "@/components/chat/ManualImage";
 import { ArtifactRenderer, type ArtifactPayload } from "@/components/ArtifactRenderer";
+import { ArtifactErrorBoundary } from "@/components/ArtifactErrorBoundary";
 import { FrontPanelPolarity } from "@/components/artifacts/FrontPanelPolarity";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ReasoningRibbon } from "@/components/chat/ReasoningRibbon";
 import { MessageStats, type Stats } from "@/components/chat/MessageStats";
 import { Badge } from "@/components/ui/badge";
-import { Send, Mic, Square, Volume2, VolumeX, Headphones, ImagePlus, X as XIcon, Menu, Plus, Trash2 } from "lucide-react";
+import { Send, Mic, Square, Volume2, VolumeX, Headphones, ImagePlus, X as XIcon, Menu, Plus, Trash2, ListChecks, BookOpen, Brain, Compass, ThumbsUp, ThumbsDown, Briefcase, RefreshCw, ChevronDown } from "lucide-react";
+import { splitTextWithCitations } from "@/lib/citation-parser";
+import { CitationLink } from "@/components/CitationLink";
+import { SourcePageViewer } from "@/components/SourcePageViewer";
+import { getUserMemory, getMemoryContext, applyMemoryUpdate, incrementSessionCount, clearMemory, type UserMemory } from "@/lib/user-memory";
+import { isTourCompleted, startOnboardingTour, resetTourFlag } from "@/lib/onboarding-tour";
 
 // --- Types ---
+
+type ReasoningStep = {
+  step_number: number;
+  tool_name: string;
+  input_params: Record<string, unknown>;
+  result_summary: string;
+  reasoning?: string;
+  duration_ms: number;
+};
 
 type ContentBlock =
   | { type: "text"; text: string }
   | { type: "artifact"; artifact: ArtifactPayload }
-  | { type: "tool_call"; name: string; input: Record<string, unknown> };
+  | { type: "tool_call"; name: string; input: Record<string, unknown>; reasoning?: string };
 
 type Message = {
   role: "user" | "assistant";
   content: string;
   imageUrl?: string; // data URL for user-attached weld photos
   blocks?: ContentBlock[];
-  toolCalls?: { name: string; input: Record<string, unknown> }[];
+  toolCalls?: { name: string; input: Record<string, unknown>; reasoning?: string }[];
+  reasoningSteps?: ReasoningStep[];
   elapsedMs?: number;
   stats?: Stats;
   cost?: number;
   turns?: number;
+  confidence?: "high" | "medium" | "low";
+  id?: string; // unique message ID for feedback
 };
 
 // --- Helpers ---
@@ -92,7 +110,42 @@ function LoadingDots() {
 
 // --- Markdown renderer ---
 
-function MarkdownContent({ text }: { text: string }) {
+/** Renders a text string with inline citation links */
+function TextWithCitations({
+  text,
+  onCitationClick,
+}: {
+  text: string;
+  onCitationClick?: (page: number) => void;
+}) {
+  if (!onCitationClick) return <>{text}</>;
+  const segments = splitTextWithCitations(text);
+  if (segments.length === 1 && segments[0].type === "text") return <>{text}</>;
+  return (
+    <>
+      {segments.map((seg, i) =>
+        seg.type === "citation" ? (
+          <CitationLink
+            key={i}
+            page={seg.page}
+            displayText={seg.text}
+            onClick={() => onCitationClick(seg.page)}
+          />
+        ) : (
+          <span key={i}>{seg.text}</span>
+        )
+      )}
+    </>
+  );
+}
+
+function MarkdownContent({
+  text,
+  onCitationClick,
+}: {
+  text: string;
+  onCitationClick?: (page: number) => void;
+}) {
   return (
     <div className="prose-chat">
       <ReactMarkdown
@@ -109,12 +162,48 @@ function MarkdownContent({ text }: { text: string }) {
               {children}
             </a>
           ),
+          // Inject citation links into text nodes inside paragraphs, list items, etc.
+          p: ({ children }) => (
+            <p>
+              {processChildren(children, onCitationClick)}
+            </p>
+          ),
+          li: ({ children }) => (
+            <li>
+              {processChildren(children, onCitationClick)}
+            </li>
+          ),
+          td: ({ children }) => (
+            <td>
+              {processChildren(children, onCitationClick)}
+            </td>
+          ),
         }}
       >
         {text}
       </ReactMarkdown>
     </div>
   );
+}
+
+/** Walk React children and replace string nodes with citation-aware rendering */
+function processChildren(
+  children: React.ReactNode,
+  onCitationClick?: (page: number) => void
+): React.ReactNode {
+  if (!onCitationClick) return children;
+
+  return Array.isArray(children)
+    ? children.map((child, i) =>
+        typeof child === "string" ? (
+          <TextWithCitations key={i} text={child} onCitationClick={onCitationClick} />
+        ) : (
+          child
+        )
+      )
+    : typeof children === "string"
+    ? <TextWithCitations text={children} onCitationClick={onCitationClick} />
+    : children;
 }
 
 // --- TTS Speaker button ---
@@ -184,6 +273,164 @@ function SpeakerButton({ blocks }: { blocks: ContentBlock[] }) {
   );
 }
 
+// --- Feedback helpers ---
+
+type FeedbackEntry = { message_id: string; rating: "up" | "down"; comment?: string; timestamp: string };
+
+function loadFeedbackLog(): FeedbackEntry[] {
+  try { return JSON.parse(localStorage.getItem("feedback_log") || "[]"); } catch { return []; }
+}
+function saveFeedback(entry: FeedbackEntry) {
+  const log = loadFeedbackLog();
+  // Replace if same message_id exists
+  const idx = log.findIndex(e => e.message_id === entry.message_id);
+  if (idx >= 0) log[idx] = entry; else log.push(entry);
+  try { localStorage.setItem("feedback_log", JSON.stringify(log)); } catch {}
+}
+
+// --- Multi-product dropdown ---
+
+const PRODUCTS = [
+  { name: "Vulcan OmniPro 220", active: true },
+  { name: "Lincoln Power MIG 210MP", active: false },
+  { name: "Miller Multimatic 215", active: false },
+  { name: "Hobart Handler 210MVP", active: false },
+];
+
+function ProductDropdown() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 group"
+      >
+        <div>
+          <h1 className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-1">
+            Vulcan OmniPro 220
+            <ChevronDown size={12} className="text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+          </h1>
+          <p className="text-[11px] text-muted-foreground text-left">
+            Technical support, built for garage hobbyists
+          </p>
+        </div>
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full mt-1 w-64 rounded-xl border border-border bg-card shadow-xl z-50 overflow-hidden">
+          <div className="py-1">
+            {PRODUCTS.map((p) => (
+              <div
+                key={p.name}
+                className={`flex items-center gap-2.5 px-3 py-2 ${
+                  p.active
+                    ? "cursor-default"
+                    : "opacity-40 cursor-not-allowed"
+                }`}
+              >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                    p.active ? "bg-emerald-500" : "bg-muted-foreground/30"
+                  }`}
+                />
+                <span className={`text-xs ${p.active ? "text-foreground font-medium" : "text-muted-foreground"}`}>
+                  {p.name}
+                </span>
+                {!p.active && (
+                  <span className="ml-auto text-[9px] font-mono text-muted-foreground/50">
+                    coming soon
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-border/50 px-3 py-1.5">
+            <p className="text-[9px] text-muted-foreground/40 font-mono">
+              Multi-product support in development
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ConfidenceBadge({ level, customerMode }: { level: "high" | "medium" | "low"; customerMode?: boolean }) {
+  if (customerMode && level !== "low") return null;
+  const config = {
+    high: { color: "bg-emerald-500", text: "text-emerald-600 dark:text-emerald-400", label: "high confidence" },
+    medium: { color: "bg-yellow-500", text: "text-yellow-600 dark:text-yellow-400", label: "medium confidence" },
+    low: { color: "bg-zinc-400", text: "text-muted-foreground", label: "based on general knowledge — verify against manual" },
+  }[level];
+  return (
+    <span className={`inline-flex items-center gap-1 text-[10px] font-mono ${config.text}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${config.color}`} />
+      {config.label}
+    </span>
+  );
+}
+
+function FeedbackButtons({ messageId }: { messageId: string }) {
+  const [rating, setRating] = useState<"up" | "down" | null>(null);
+  const [showInput, setShowInput] = useState(false);
+  const [comment, setComment] = useState("");
+
+  // Check existing feedback on mount
+  useEffect(() => {
+    const log = loadFeedbackLog();
+    const existing = log.find(e => e.message_id === messageId);
+    if (existing) setRating(existing.rating);
+  }, [messageId]);
+
+  const handleUp = () => {
+    setRating("up");
+    setShowInput(false);
+    saveFeedback({ message_id: messageId, rating: "up", timestamp: new Date().toISOString() });
+  };
+  const handleDown = () => {
+    setRating("down");
+    setShowInput(true);
+  };
+  const handleSubmitComment = () => {
+    saveFeedback({ message_id: messageId, rating: "down", comment, timestamp: new Date().toISOString() });
+    setShowInput(false);
+  };
+
+  return (
+    <div>
+      <div className="flex items-center gap-1">
+        <button onClick={handleUp} className={`p-0.5 rounded transition-colors ${rating === "up" ? "text-emerald-500" : "text-muted-foreground/40 hover:text-muted-foreground"}`} title="Helpful">
+          <ThumbsUp size={12} />
+        </button>
+        <button onClick={handleDown} className={`p-0.5 rounded transition-colors ${rating === "down" ? "text-red-500" : "text-muted-foreground/40 hover:text-muted-foreground"}`} title="Not helpful">
+          <ThumbsDown size={12} />
+        </button>
+      </div>
+      {showInput && (
+        <div className="flex items-center gap-1.5 mt-1">
+          <input
+            value={comment}
+            onChange={e => setComment(e.target.value)}
+            placeholder="What was wrong?"
+            className="text-[10px] bg-muted border border-border rounded px-2 py-1 flex-1 min-w-0 focus:outline-none focus:ring-1 focus:ring-ring"
+            onKeyDown={e => e.key === "Enter" && handleSubmitComment()}
+          />
+          <button onClick={handleSubmitComment} className="text-[10px] font-mono text-primary hover:opacity-80">Send</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // --- Message component ---
 
 function MessageBubble({
@@ -191,11 +438,17 @@ function MessageBubble({
   isStreaming,
   onTTSComplete,
   autoSpeak,
+  onCitationClick,
+  onSendMessage,
+  customerMode,
 }: {
   message: Message;
   isStreaming: boolean;
   onTTSComplete?: () => void;
   autoSpeak?: boolean;
+  onCitationClick?: (page: number) => void;
+  onSendMessage?: (msg: string) => void;
+  customerMode?: boolean;
 }) {
   const hasAutoSpoken = useRef(false);
 
@@ -272,9 +525,10 @@ function MessageBubble({
         <span className="text-[11px] font-mono text-muted-foreground">Prox</span>
       </div>
 
-      {toolCalls.length > 0 && (
+      {toolCalls.length > 0 && !customerMode && (
         <ReasoningRibbon
           toolCalls={toolCalls}
+          reasoningSteps={message.reasoningSteps || []}
           isStreaming={isStreaming}
           elapsedMs={message.elapsedMs || 0}
         />
@@ -284,21 +538,25 @@ function MessageBubble({
 
       {artifactBlocks.map((block, i) => (
         <div key={i} className="mb-3">
-          <ArtifactRenderer artifact={block.artifact} />
+          <ArtifactErrorBoundary customerMode={customerMode}>
+            <ArtifactRenderer artifact={block.artifact} onCitationClick={onCitationClick} onSendMessage={onSendMessage} />
+          </ArtifactErrorBoundary>
         </div>
       ))}
 
-      {fullText.trim() && <MarkdownContent text={fullText} />}
+      {fullText.trim() && <MarkdownContent text={fullText} onCitationClick={onCitationClick} />}
 
       {isStreaming && hasContent && (
         <span className="inline-block w-1.5 h-4 bg-foreground/70 animate-pulse-cursor ml-0.5 -mb-0.5" />
       )}
 
-      {/* Footer: stats + speaker */}
+      {/* Footer: stats + confidence + speaker + feedback */}
       {!isStreaming && hasContent && (
-        <div className="flex items-center gap-3 mt-1">
-          {message.stats && <MessageStats stats={message.stats} />}
-          <SpeakerButton blocks={blocks} />
+        <div className="flex items-center gap-3 mt-1 flex-wrap">
+          {message.stats && !customerMode && <MessageStats stats={message.stats} />}
+          {message.confidence && <ConfidenceBadge level={message.confidence} customerMode={customerMode} />}
+          {!customerMode && <SpeakerButton blocks={blocks} />}
+          {message.id && <FeedbackButtons messageId={message.id} />}
         </div>
       )}
     </div>
@@ -500,10 +758,20 @@ export default function Home() {
   const [handsFree, setHandsFree] = useState(false);
   const [attachedImage, setAttachedImage] = useState<{ file: File; dataUrl: string } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [guidedMode, setGuidedMode] = useState(false);
+  const [sourceViewer, setSourceViewer] = useState<{ open: boolean; page: number | null; topic: string | null; browse: boolean }>({ open: false, page: null, topic: null, browse: false });
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [chats, setChats] = useState<ChatSession[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [presets, setPresets] = useState<Array<{ id: string; name: string; process: string; material: string; thickness: string; voltage: string; created_at: string }>>([]);
+  const [presetsOpen, setPresetsOpen] = useState(false);
+  const [userMemory, setUserMemory] = useState<UserMemory | null>(null);
+  const [memoryPopoverOpen, setMemoryPopoverOpen] = useState(false);
+  const [customerMode, setCustomerMode] = useState(false);
+  const [streamError, setStreamError] = useState(false);
+  const lastUserMsgRef = useRef<string>("");
+  const memoryPopoverRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -558,6 +826,70 @@ export default function Home() {
     handsFreeRef.current = handsFree;
   }, [handsFree]);
 
+  // Persist guided mode toggle
+  useEffect(() => {
+    const saved = localStorage.getItem("guided_mode_enabled");
+    if (saved === "true") setGuidedMode(true);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("guided_mode_enabled", String(guidedMode));
+  }, [guidedMode]);
+
+  // Persist customer mode toggle
+  useEffect(() => {
+    const saved = localStorage.getItem("customer_mode_enabled");
+    if (saved === "true") setCustomerMode(true);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("customer_mode_enabled", String(customerMode));
+  }, [customerMode]);
+
+  // Load presets + listen for updates from configurator
+  useEffect(() => {
+    function loadPresets() {
+      try {
+        const raw = localStorage.getItem("settings_presets");
+        if (raw) setPresets(JSON.parse(raw));
+      } catch {}
+    }
+    loadPresets();
+    window.addEventListener("presets-updated", loadPresets);
+    return () => window.removeEventListener("presets-updated", loadPresets);
+  }, []);
+
+  // Load user memory on mount
+  useEffect(() => {
+    const mem = getUserMemory();
+    setUserMemory(mem);
+  }, []);
+
+  // Trigger onboarding tour for first-time users
+  useEffect(() => {
+    if (isTourCompleted()) return;
+    if (chats.length > 0) return;
+    const timer = setTimeout(() => {
+      startOnboardingTour({
+        onComplete: () => {},
+        onSkip: () => {},
+      });
+    }, 1000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Close memory popover on click outside
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (memoryPopoverRef.current && !memoryPopoverRef.current.contains(e.target as Node)) {
+        setMemoryPopoverOpen(false);
+      }
+    }
+    if (memoryPopoverOpen) {
+      document.addEventListener("mousedown", handleClick);
+      return () => document.removeEventListener("mousedown", handleClick);
+    }
+  }, [memoryPopoverOpen]);
+
   function handleNewChat() {
     const id = generateId();
     const session: ChatSession = { id, title: "", messages: [], createdAt: new Date().toISOString() };
@@ -586,6 +918,19 @@ export default function Home() {
       setMessages([]);
     }
   }
+
+  const openSourceViewer = useCallback((page: number, topic?: string | null) => {
+    setSourceViewer({ open: true, page, topic: topic || null, browse: false });
+  }, []);
+
+  const openManualBrowser = useCallback(() => {
+    const lastPage = parseInt(localStorage.getItem("source_viewer_last_page") || "1", 10);
+    setSourceViewer({ open: true, page: lastPage, topic: null, browse: true });
+  }, []);
+
+  const closeSourceViewer = useCallback(() => {
+    setSourceViewer((prev) => ({ ...prev, open: false }));
+  }, []);
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
@@ -676,17 +1021,21 @@ export default function Home() {
 
     const displayContent = hasImage && !msg ? "[Weld photo attached]" : msg || "[Weld photo attached]";
     const userMessage: Message = { role: "user", content: displayContent, imageUrl: imageDataUrl || undefined };
+    lastUserMsgRef.current = msg;
+    setStreamError(false);
     setMessages((prev) => [...prev, userMessage]);
     setLoading(true);
 
     const controller = new AbortController();
     abortRef.current = controller;
 
+    const msgId = generateId();
     const assistantMessage: Message = {
       role: "assistant",
       content: "",
       blocks: [],
       toolCalls: [],
+      id: msgId,
     };
     setMessages((prev) => [...prev, assistantMessage]);
 
@@ -695,6 +1044,12 @@ export default function Home() {
       if (msg) payload.message = msg;
       if (imageDataUrl) payload.image = imageDataUrl;
       if (!msg && imageDataUrl) payload.message = "What's wrong with this weld? Diagnose it.";
+      if (guidedMode) payload.guided_mode = true;
+      payload.user_memory_context = getMemoryContext();
+
+      // Increment session count on first message
+      const updatedMem = incrementSessionCount();
+      setUserMemory(updatedMem);
 
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -724,10 +1079,12 @@ export default function Home() {
 
       let textBlocks: { type: "text"; text: string }[] = [];
       let artifactBlocks: { type: "artifact"; artifact: ArtifactPayload }[] = [];
-      let toolCalls: { name: string; input: Record<string, unknown> }[] = [];
+      let toolCalls: { name: string; input: Record<string, unknown>; reasoning?: string }[] = [];
+      let reasoningSteps: ReasoningStep[] = [];
       let cost: number | undefined;
       let turns: number | undefined;
       let stats: Stats | undefined;
+      let confidence: "high" | "medium" | "low" | undefined;
       const streamStartMs = Date.now();
       let elapsedMs = 0;
 
@@ -761,10 +1118,21 @@ export default function Home() {
           if (eventType === "text" && data.text) {
             textBlocks = [...textBlocks, { type: "text", text: data.text }];
           } else if (eventType === "tool_call") {
-            toolCalls = [...toolCalls, { name: data.name, input: data.input || {} }];
+            toolCalls = [...toolCalls, { name: data.name, input: data.input || {}, reasoning: data.reasoning }];
+          } else if (eventType === "reasoning_step") {
+            // Attach reasoning from the matching tool_call event
+            const matchingToolCall = toolCalls.find(tc => tc.name === data.tool_name && !reasoningSteps.some(rs => rs.tool_name === tc.name && rs.step_number === data.step_number));
+            reasoningSteps = [...reasoningSteps, {
+              step_number: data.step_number,
+              tool_name: data.tool_name,
+              input_params: data.input_params || {},
+              result_summary: data.result_summary || "",
+              reasoning: matchingToolCall?.reasoning || data.reasoning,
+              duration_ms: data.duration_ms || 0,
+            }];
           } else if (eventType === "artifact" && data.artifact_type) {
             // Deduplicate: skip if we already have this artifact type
-            const dedupTypes = ["weld_diagnosis_result", "machine_photo_annotation"];
+            const dedupTypes = ["weld_diagnosis_result", "machine_photo_annotation", "guided_walkthrough", "video_recommendation"];
             if (dedupTypes.includes(data.artifact_type) &&
                 artifactBlocks.some(b => b.artifact.artifact_type === data.artifact_type)) {
               continue;
@@ -795,6 +1163,12 @@ export default function Home() {
               elapsed_ms: data.elapsed_ms,
               tool_call_count: data.tool_call_count,
             };
+          } else if (eventType === "confidence" && data.level) {
+            confidence = data.level;
+          } else if (eventType === "memory_update") {
+            // Silently apply user state updates from extract_user_state
+            applyMemoryUpdate(data);
+            setUserMemory(getUserMemory());
           } else if (eventType === "error") {
             textBlocks = [...textBlocks, { type: "text", text: `Error: ${data.error}` }];
           }
@@ -807,10 +1181,13 @@ export default function Home() {
               content: "",
               blocks: [...textBlocks, ...artifactBlocks],
               toolCalls,
+              reasoningSteps,
               elapsedMs,
               stats,
               cost,
               turns,
+              confidence,
+              id: msgId,
             };
             return updated;
           });
@@ -818,13 +1195,13 @@ export default function Home() {
       }
     } catch (err: any) {
       if (err.name !== "AbortError") {
+        setStreamError(true);
         setMessages((prev) => {
           const updated = [...prev];
-          updated[updated.length - 1] = {
-            role: "assistant",
-            content: "",
-            blocks: [{ type: "text", text: `Error: ${err.message}` }],
-          };
+          // Remove the empty assistant message
+          if (updated.length > 0 && updated[updated.length - 1].role === "assistant" && !(updated[updated.length - 1].blocks?.length)) {
+            updated.pop();
+          }
           return updated;
         });
       }
@@ -924,6 +1301,37 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        {/* Saved Presets */}
+        {presets.length > 0 && (
+          <div className="border-t border-border">
+            <button
+              onClick={() => setPresetsOpen((v) => !v)}
+              className="flex items-center justify-between w-full px-4 py-2 text-[10px] font-mono text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <span>Saved Presets ({presets.length})</span>
+              <span>{presetsOpen ? "▲" : "▼"}</span>
+            </button>
+            {presetsOpen && (
+              <div className="pb-2">
+                {presets.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => {
+                      handleSubmit(`What settings for ${p.thickness} ${p.material.toLowerCase()} ${p.process} on ${p.voltage}?`);
+                    }}
+                    className="block w-full text-left px-3 py-1.5 text-[11px] text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  >
+                    <span className="text-foreground">{p.name}</span>
+                    <span className="block text-[9px] text-muted-foreground/50 font-mono">
+                      {p.process} · {p.thickness} {p.material} · {p.voltage}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </aside>
 
       {/* Main content */}
@@ -938,28 +1346,149 @@ export default function Home() {
             >
               <Menu size={18} />
             </button>
-            <div>
-              <h1 className="text-sm font-semibold text-foreground tracking-tight">
-                Vulcan OmniPro 220
-              </h1>
-              <p className="text-[11px] text-muted-foreground">
-                Technical support, built for garage hobbyists
-              </p>
-            </div>
+            <ProductDropdown />
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={openManualBrowser}
+              data-tour-target="browse-manual-button"
+              className="tour-browse-manual flex items-center gap-1 text-[10px] font-mono text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <BookOpen size={12} />
+              <span className="hidden sm:inline">Browse Manual</span>
+            </button>
+
+            {/* Memory / Brain icon */}
+            <div className={`relative ${customerMode ? "hidden" : ""}`} ref={memoryPopoverRef}>
+              <button
+                onClick={() => setMemoryPopoverOpen((v) => !v)}
+                data-tour-target="brain-icon"
+                className={`flex items-center gap-1 text-[10px] font-mono transition-colors p-1 rounded-md ${
+                  userMemory?.machine_state.process
+                    ? "text-primary hover:text-primary/80"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="What Prox remembers about you"
+              >
+                <Brain size={14} />
+              </button>
+
+              {memoryPopoverOpen && (
+                <div className="absolute right-0 top-full mt-1 w-72 rounded-xl border border-border bg-card shadow-xl z-50 overflow-hidden">
+                  <div className="px-3 py-2 border-b border-border bg-muted/30">
+                    <p className="text-[11px] font-semibold text-foreground">What I remember</p>
+                  </div>
+                  <div className="px-3 py-2.5 space-y-2 text-[11px]">
+                    {/* Machine state */}
+                    {userMemory?.machine_state.process ? (
+                      <div>
+                        <p className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider mb-0.5">Setup</p>
+                        <p className="text-foreground">
+                          {[
+                            userMemory.machine_state.voltage,
+                            userMemory.machine_state.process,
+                            userMemory.machine_state.material,
+                            userMemory.machine_state.thickness,
+                          ].filter(Boolean).join(", ")}
+                          {userMemory.machine_state.wire_diameter && (
+                            <span className="text-muted-foreground"> (wire: {userMemory.machine_state.wire_diameter})</span>
+                          )}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground/60">No machine setup recorded yet</p>
+                    )}
+
+                    {/* Profile */}
+                    {(userMemory?.user_profile.session_count ?? 0) > 0 && (
+                      <div>
+                        <p className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider mb-0.5">Profile</p>
+                        <p className="text-foreground">
+                          Session {userMemory!.user_profile.session_count}
+                          {userMemory!.user_profile.experience_level && ` · ${userMemory!.user_profile.experience_level}`}
+                          {userMemory!.user_profile.primary_use && ` · ${userMemory!.user_profile.primary_use}`}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Recent topics */}
+                    {(userMemory?.recent_topics.length ?? 0) > 0 && (
+                      <div>
+                        <p className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider mb-0.5">Recent Topics</p>
+                        <div className="flex flex-wrap gap-1">
+                          {userMemory!.recent_topics.slice(0, 6).map((t, i) => (
+                            <span key={i} className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                              {t.topic}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="px-3 py-2 border-t border-border">
+                    <button
+                      onClick={() => {
+                        clearMemory();
+                        setUserMemory(getUserMemory());
+                        setMemoryPopoverOpen(false);
+                      }}
+                      className="text-[10px] font-mono text-red-500 hover:text-red-400 transition-colors"
+                    >
+                      Forget everything
+                    </button>
+                    <button
+                      onClick={() => {
+                        setMemoryPopoverOpen(false);
+                        resetTourFlag();
+                        setTimeout(() => {
+                          startOnboardingTour({
+                            onComplete: () => {},
+                            onSkip: () => {},
+                          });
+                        }, 300);
+                      }}
+                      className="block mt-1.5 text-[10px] font-mono text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Take the tour again
+                    </button>
+                    {loadFeedbackLog().length > 0 && (
+                      <p className="mt-1.5 text-[10px] font-mono text-muted-foreground/60">
+                        Feedback collected: {loadFeedbackLog().length} responses
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <a
               href="/graph"
               target="_blank"
               rel="noopener noreferrer"
+              data-tour-target="knowledge-graph-link"
               className="text-[10px] font-mono text-muted-foreground hover:text-foreground transition-colors"
             >
               Knowledge Graph
             </a>
 
+            {/* Tour / Help button */}
+            <button
+              onClick={() => {
+                resetTourFlag();
+                startOnboardingTour({ onComplete: () => {}, onSkip: () => {} });
+              }}
+              data-tour-target="tour-button"
+              className="flex items-center gap-1 text-[10px] font-mono text-muted-foreground hover:text-foreground transition-colors"
+              title={customerMode ? "Get help" : "Take the product tour"}
+            >
+              <Compass size={12} />
+              <span className="hidden sm:inline">{customerMode ? "Help" : "Tour"}</span>
+            </button>
+
             {/* Hands-free toggle */}
             <button
               onClick={() => setHandsFree((v) => !v)}
+              data-tour-target="hands-free-toggle"
               className={`flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-mono transition-all ${
                 handsFree
                   ? "border-primary bg-primary/10 text-primary shadow-[0_0_6px_rgba(59,130,246,0.4)]"
@@ -971,8 +1500,37 @@ export default function Home() {
               <span className="hidden sm:inline">Hands-free</span>
             </button>
 
+            {/* Guided Mode toggle */}
+            <button
+              onClick={() => setGuidedMode((v) => !v)}
+              data-tour-target="guided-toggle"
+              className={`flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-mono transition-all ${
+                guidedMode
+                  ? "border-primary bg-primary/10 text-primary shadow-[0_0_6px_rgba(59,130,246,0.4)]"
+                  : "border-border text-muted-foreground hover:text-foreground"
+              }`}
+              title={guidedMode ? "Guided Mode ON — step-by-step walkthroughs" : "Enable guided step-by-step walkthroughs"}
+            >
+              <ListChecks size={12} className={guidedMode ? "animate-pulse" : ""} />
+              <span className="hidden sm:inline">Guided</span>
+            </button>
+
+            {/* Customer Mode toggle */}
+            <button
+              onClick={() => setCustomerMode((v) => !v)}
+              className={`flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-mono transition-all ${
+                customerMode
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border text-muted-foreground hover:text-foreground"
+              }`}
+              title={customerMode ? "Switch to Developer Mode" : "Switch to Customer Mode"}
+            >
+              <Briefcase size={12} />
+              <span className="hidden sm:inline">{customerMode ? "Customer" : "Dev"}</span>
+            </button>
+
             <Badge variant="outline" className="text-[10px] font-mono text-muted-foreground">
-              Built for Prox
+              {customerMode ? "Vulcan Support" : "Built for Prox"}
             </Badge>
             <ThemeToggle />
           </div>
@@ -1011,6 +1569,28 @@ export default function Home() {
           <div className="mx-auto max-w-4xl space-y-6">
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center pt-8 pb-8">
+                {/* Welcome back banner for returning users */}
+                {userMemory && userMemory.user_profile.session_count >= 1 && (userMemory.machine_state.process || userMemory.machine_state.voltage) && (
+                  <div className="w-full max-w-lg mb-4 animate-hero-1">
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-center">
+                      <p className="text-xs text-foreground">
+                        Welcome back. I remember you&apos;re on{" "}
+                        <span className="font-semibold">
+                          {[
+                            userMemory.machine_state.voltage,
+                            userMemory.machine_state.process,
+                            userMemory.machine_state.material,
+                            userMemory.machine_state.thickness,
+                          ].filter(Boolean).join(" ")}
+                        </span>.
+                      </p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Need to change anything, or pick up where you left off?
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="w-full max-w-md animate-hero-1">
                   <FrontPanelPolarity process="MIG" />
                 </div>
@@ -1046,9 +1626,26 @@ export default function Home() {
                   isStreaming={loading && isLast}
                   autoSpeak={handsFree && isLast && !loading}
                   onTTSComplete={handleTTSComplete}
+                  onCitationClick={openSourceViewer}
+                  onSendMessage={(msg) => handleSubmit(msg)}
+                  customerMode={customerMode}
                 />
               );
             })}
+
+            {/* Network error retry card */}
+            {streamError && (
+              <div className="animate-message-in rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 flex items-center gap-3">
+                <RefreshCw size={14} className="text-destructive flex-shrink-0" />
+                <p className="text-xs text-foreground flex-1">Connection interrupted.</p>
+                <button
+                  onClick={() => { setStreamError(false); handleSubmit(lastUserMsgRef.current); }}
+                  className="text-xs font-mono text-primary hover:underline flex-shrink-0"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -1083,6 +1680,7 @@ export default function Home() {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={loading}
+                data-tour-target="image-upload-button"
                 className="flex items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30"
                 title="Attach weld photo"
               >
@@ -1093,6 +1691,7 @@ export default function Home() {
               <button
                 onClick={handleMicClick}
                 disabled={!voice.supported || loading}
+                data-tour-target="mic-button"
                 className={`flex items-center justify-center rounded-lg p-2 transition-all ${
                   voice.isListening
                     ? "bg-red-500/15 text-red-500 animate-pulse"
@@ -1113,6 +1712,7 @@ export default function Home() {
 
               <textarea
                 ref={textareaRef}
+                data-tour-target="chat-input"
                 value={voice.isListening ? voice.interimText : input}
                 onChange={(e) => {
                   if (!voice.isListening && e.target.value.length <= MAX_CHARS)
@@ -1138,6 +1738,7 @@ export default function Home() {
               <button
                 onClick={() => handleSubmit()}
                 disabled={loading || (!input.trim() && !attachedImage) || voice.isListening}
+                data-tour-target="send-button"
                 className="flex items-center justify-center rounded-lg bg-primary p-2 text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-30"
               >
                 <Send size={16} />
@@ -1154,6 +1755,16 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Source Page Viewer */}
+      <SourcePageViewer
+        open={sourceViewer.open}
+        page_number={sourceViewer.page}
+        highlight_topic={sourceViewer.topic}
+        browse_mode={sourceViewer.browse}
+        on_close={closeSourceViewer}
+        on_send_message={(text) => handleSubmit(text)}
+      />
     </div>
   );
 }
