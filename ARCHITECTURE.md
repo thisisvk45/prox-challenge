@@ -27,7 +27,7 @@ User input (voice, text, photo)
     → localStorage persistence (memory, presets, feedback, chat history)
 ```
 
-Total application code: roughly 10,000 lines of TypeScript across 30 files. No external database. No vector store. No embedding model. Everything runs on Vercel with two API keys (Anthropic and ElevenLabs).
+Total application code: roughly 10,000 lines of TypeScript across 30 files. Everything runs on Vercel with two API keys (Anthropic and ElevenLabs).
 
 Every number in this document (file sizes, line counts, tool counts, latencies, costs) was measured against the actual codebase and the actual production deployment, not estimated. If you find a discrepancy, the codebase is the source of truth and this document is wrong. File an issue and I will fix it.
 
@@ -65,7 +65,7 @@ RAG would make sense at 10,000 pages across 500 products. For a single 48-page m
 
 ## Tool system
 
-14 tools defined in `lib/api-tools.ts`. Each tool is a function that reads from the knowledge base and returns either a JSON string or a multi-modal content array (text + base64 images).
+14 tools in `lib/api-tools.ts`. Each reads from kb/ and returns JSON or a multi-modal content array.
 
 ### Tool inventory
 
@@ -400,7 +400,7 @@ These are not gaps that hurt the demo. They are gaps that would hurt the second 
 | Theming | next-themes | 0.4.6 |
 | Tour | driver.js | 1.4.0 |
 
-No database driver. No vector store SDK. No embedding library. The entire application runs on two API keys and static JSON files.
+The entire application runs on two API keys and static JSON files.
 
 ---
 
