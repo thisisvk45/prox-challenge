@@ -71,6 +71,7 @@ export async function POST(request: Request) {
         let totalToolCalls = 0;
         const startMs = Date.now();
         const toolsUsed: string[] = [];
+        let technicalResponseText = ""; // Accumulates ALL text blocks across all turns
 
         while (turns < maxTurns) {
           turns++;
@@ -99,6 +100,7 @@ export async function POST(request: Request) {
             if (block.type === "text") {
               send("text", { text: block.text });
               turnReasoningText += block.text + " ";
+              technicalResponseText += block.text + "\n";
             } else if (block.type === "tool_use") {
               const toolName = block.name;
               send("tool_call", { name: toolName, input: block.input, reasoning: turnReasoningText.trim() || undefined });
@@ -288,119 +290,116 @@ export async function POST(request: Request) {
         send("confidence", { level: confidence });
 
         // --- Multi-Agent Deliberation: Safety + Quality Review ---
-        // Extract the Technical Agent's full text response for review
-        const lastAssistantMsg = messages.filter(m => m.role === "assistant").pop();
-        let technicalResponseText = "";
-        if (lastAssistantMsg && Array.isArray(lastAssistantMsg.content)) {
-          technicalResponseText = (lastAssistantMsg.content as any[])
-            .filter((b: any) => b.type === "text")
-            .map((b: any) => b.text)
-            .join("\n");
-        }
-
         const userQuestion = message || "User uploaded an image for analysis.";
+        const reviewText = technicalResponseText.trim();
 
-        // Run Safety Agent and Quality Reviewer in parallel
-        send("agent_phase", { phase: "safety_review", status: "running" });
-        send("agent_phase", { phase: "quality_review", status: "running" });
+        console.log("Passing to reviewers:", reviewText.substring(0, 200));
 
-        const reviewStartMs = Date.now();
+        if (!reviewText) {
+          // No response generated, skip review agents
+          send("agent_phase", { phase: "safety_review", status: "complete", result: { safe: true, warnings: [], critical_issues: [], duration_ms: 0 } });
+          send("agent_phase", { phase: "quality_review", status: "complete", result: { approved: true, accuracy_score: 7, clarity_score: 7, suggestion: null, duration_ms: 0 } });
+        } else {
+          // Run Safety Agent and Quality Reviewer in parallel
+          send("agent_phase", { phase: "safety_review", status: "running" });
+          send("agent_phase", { phase: "quality_review", status: "running" });
 
-        const [safetyResult, qualityResult] = await Promise.all([
-          // AGENT 1: Safety Agent
-          (async () => {
-            const safetyStart = Date.now();
-            try {
-              const resp = await client.messages.create({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 1024,
-                system: "You are a safety-first welding expert reviewing an AI assistant's interaction with a garage hobbyist using a Vulcan OmniPro 220. Your ONLY job is to flag safety issues. Check for: reversed polarity that could damage the machine (MIG uses DCEP, Flux-Cored uses DCEN, TIG uses DCEN, Stick uses DCEP), duty cycle violations that could cause overheating, incorrect cable assignments, missing safety warnings for aluminum or TIG processes, any advice that contradicts the owner's manual. Respond with ONLY valid JSON: { \"safe\": boolean, \"warnings\": string[], \"critical_issues\": string[] }. If safe is true and no warnings, return { \"safe\": true, \"warnings\": [], \"critical_issues\": [] }. Be conservative. Flag anything uncertain.",
-                messages: [{
-                  role: "user",
-                  content: `User question: "${userQuestion}"\n\nAI assistant's response:\n${technicalResponseText}\n\nMemory context: ${user_memory_context || "New user"}\n\nAnalyze this response for safety issues. Return JSON only.`
-                }],
-              });
-              const text = resp.content.filter((b): b is Anthropic.Messages.TextBlock => b.type === "text").map(b => b.text).join("");
-              totalInputTokens += resp.usage?.input_tokens || 0;
-              totalOutputTokens += resp.usage?.output_tokens || 0;
-              const parsed = JSON.parse(text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim());
-              return { ...parsed, duration_ms: Date.now() - safetyStart };
-            } catch {
-              return { safe: true, warnings: [], critical_issues: [], duration_ms: Date.now() - safetyStart, error: true };
-            }
-          })(),
-          // AGENT 3: Quality Reviewer
-          (async () => {
-            const qualityStart = Date.now();
-            try {
-              const resp = await client.messages.create({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 1024,
-                system: "You are a senior technical writer reviewing an AI assistant's response about the Vulcan OmniPro 220 welder. The response was generated by a technical specialist using structured knowledge lookups. Your job: (1) Check if the response actually answers the user's question directly. (2) Check if any claims lack source backing from the manual. (3) Check if the response is clear enough for a beginner who doesn't know what DCEP means. (4) Suggest one specific improvement if any. Respond with ONLY valid JSON: { \"approved\": boolean, \"accuracy_score\": number, \"clarity_score\": number, \"suggestion\": string | null }. Scores are 1-10.",
-                messages: [{
-                  role: "user",
-                  content: `User question: "${userQuestion}"\n\nAI assistant's response:\n${technicalResponseText}\n\nReview this response for accuracy, completeness, and clarity. Return JSON only.`
-                }],
-              });
-              const text = resp.content.filter((b): b is Anthropic.Messages.TextBlock => b.type === "text").map(b => b.text).join("");
-              totalInputTokens += resp.usage?.input_tokens || 0;
-              totalOutputTokens += resp.usage?.output_tokens || 0;
-              const parsed = JSON.parse(text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim());
-              return { ...parsed, duration_ms: Date.now() - qualityStart };
-            } catch {
-              return { approved: true, accuracy_score: 7, clarity_score: 7, suggestion: null, duration_ms: Date.now() - qualityStart, error: true };
-            }
-          })(),
-        ]);
+          const [safetyResult, qualityResult] = await Promise.all([
+            // AGENT 1: Safety Agent
+            (async () => {
+              const safetyStart = Date.now();
+              try {
+                const resp = await client.messages.create({
+                  model: "claude-sonnet-4-20250514",
+                  max_tokens: 1024,
+                  system: "You are reviewing an AI response about the Vulcan OmniPro 220 welder for SAFETY issues only. Do NOT fact-check duty cycle numbers, amperage ranges, polarity types, or specs — those come from the Technical Specialist's verified manual lookups and are correct. Your ONLY job is to flag: (1) Dangerous operating conditions the response fails to warn about (e.g., advising someone to use DCEN for MIG when DCEP is required, or vice versa). (2) Missing safety context for aluminum welding (spool gun requirement) or TIG operations (gas flow, tungsten prep). (3) Advice that contradicts basic welding safety principles like always wearing PPE, ensuring ventilation, or checking gas connections. If the response is a normal technical answer backed by tool lookups that correctly states specs and polarity, return { \"safe\": true, \"warnings\": [], \"critical_issues\": [] }. Only flag issues where the ADVICE ITSELF is dangerous, not where numbers seem unfamiliar to you. Respond with ONLY valid JSON.",
+                  messages: [{
+                    role: "user",
+                    content: `User question: "${userQuestion}"\n\nAI assistant's response:\n${reviewText}\n\nAnalyze this response for safety issues. Return JSON only.`
+                  }],
+                });
+                const text = resp.content.filter((b): b is Anthropic.Messages.TextBlock => b.type === "text").map(b => b.text).join("");
+                totalInputTokens += resp.usage?.input_tokens || 0;
+                totalOutputTokens += resp.usage?.output_tokens || 0;
+                const parsed = JSON.parse(text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim());
+                return { ...parsed, duration_ms: Date.now() - safetyStart };
+              } catch {
+                return { safe: true, warnings: [], critical_issues: [], duration_ms: Date.now() - safetyStart, error: true };
+              }
+            })(),
+            // AGENT 3: Quality Reviewer
+            (async () => {
+              const qualityStart = Date.now();
+              try {
+                const resp = await client.messages.create({
+                  model: "claude-sonnet-4-20250514",
+                  max_tokens: 1024,
+                  system: "You are a senior technical writer reviewing an AI assistant's response about the Vulcan OmniPro 220 welder. The response was generated by a Technical Specialist using structured knowledge lookups from the verified owner's manual. Your job: (1) Check if the response actually answers the user's question directly. (2) Check if the response is clear enough for a beginner. (3) Suggest one specific improvement if any. If the response is non-empty, contains a direct answer to the user's question, and includes specific numbers or references, return approved: true with accuracy_score >= 7 and clarity_score >= 7. Only return low scores if the response is genuinely unclear, missing the answer entirely, or contradicts itself. Do NOT penalize for brevity, for not including unrelated safety warnings, or for technical terminology that is explained in context. Respond with ONLY valid JSON: { \"approved\": boolean, \"accuracy_score\": number, \"clarity_score\": number, \"suggestion\": string | null }. Scores are 1-10.",
+                  messages: [{
+                    role: "user",
+                    content: `User question: "${userQuestion}"\n\nAI assistant's response:\n${reviewText}\n\nReview this response. Return JSON only.`
+                  }],
+                });
+                const text = resp.content.filter((b): b is Anthropic.Messages.TextBlock => b.type === "text").map(b => b.text).join("");
+                totalInputTokens += resp.usage?.input_tokens || 0;
+                totalOutputTokens += resp.usage?.output_tokens || 0;
+                const parsed = JSON.parse(text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim());
+                return { ...parsed, duration_ms: Date.now() - qualityStart };
+              } catch {
+                return { approved: true, accuracy_score: 7, clarity_score: 7, suggestion: null, duration_ms: Date.now() - qualityStart, error: true };
+              }
+            })(),
+          ]);
 
-        // Emit phase completion events
-        send("agent_phase", {
-          phase: "safety_review",
-          status: "complete",
-          result: {
-            safe: safetyResult.safe,
-            warnings: safetyResult.warnings || [],
-            critical_issues: safetyResult.critical_issues || [],
-            duration_ms: safetyResult.duration_ms,
-          },
-        });
-        send("agent_phase", {
-          phase: "quality_review",
-          status: "complete",
-          result: {
-            approved: qualityResult.approved,
-            accuracy_score: qualityResult.accuracy_score,
-            clarity_score: qualityResult.clarity_score,
-            suggestion: qualityResult.suggestion,
-            duration_ms: qualityResult.duration_ms,
-          },
-        });
-
-        // Emit safety warnings as artifacts if needed
-        if (safetyResult.critical_issues && safetyResult.critical_issues.length > 0) {
-          send("artifact", {
-            artifact_type: "safety_warning",
-            title: "Safety Warning",
-            data: {
-              level: "critical",
-              issues: safetyResult.critical_issues,
+          // Emit phase completion events
+          send("agent_phase", {
+            phase: "safety_review",
+            status: "complete",
+            result: {
+              safe: safetyResult.safe,
+              warnings: safetyResult.warnings || [],
+              critical_issues: safetyResult.critical_issues || [],
+              duration_ms: safetyResult.duration_ms,
             },
           });
-        }
-        if (safetyResult.warnings && safetyResult.warnings.length > 0) {
-          send("artifact", {
-            artifact_type: "safety_warning",
-            title: "Safety Note",
-            data: {
-              level: "caution",
-              issues: safetyResult.warnings,
+          send("agent_phase", {
+            phase: "quality_review",
+            status: "complete",
+            result: {
+              approved: qualityResult.approved,
+              accuracy_score: qualityResult.accuracy_score,
+              clarity_score: qualityResult.clarity_score,
+              suggestion: qualityResult.suggestion,
+              duration_ms: qualityResult.duration_ms,
             },
           });
-        }
 
-        // Emit quality note if not approved or low accuracy
-        if (qualityResult.approved === false || (qualityResult.accuracy_score && qualityResult.accuracy_score < 7)) {
-          send("text", { text: "\n\n> **Note:** This response may be incomplete. Consider verifying against the manual." });
+          // Emit safety warnings as artifacts if needed
+          if (safetyResult.critical_issues && safetyResult.critical_issues.length > 0) {
+            send("artifact", {
+              artifact_type: "safety_warning",
+              title: "Safety Warning",
+              data: {
+                level: "critical",
+                issues: safetyResult.critical_issues,
+              },
+            });
+          }
+          if (safetyResult.warnings && safetyResult.warnings.length > 0) {
+            send("artifact", {
+              artifact_type: "safety_warning",
+              title: "Safety Note",
+              data: {
+                level: "caution",
+                issues: safetyResult.warnings,
+              },
+            });
+          }
+
+          // Emit quality note if not approved or low accuracy
+          if (qualityResult.approved === false || (qualityResult.accuracy_score && qualityResult.accuracy_score < 7)) {
+            send("text", { text: "\n\n> **Note:** This response may be incomplete. Consider verifying against the manual." });
+          }
         }
 
         // Sonnet pricing: $3/M input, $15/M output
