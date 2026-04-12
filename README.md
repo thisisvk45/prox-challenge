@@ -63,7 +63,7 @@ Ask "walk me through MIG setup" and the agent enters a stateful walkthrough. Eac
 **5. Multi-agent deliberation.**
 Every query runs through three agents in coordination. A Technical Specialist generates the answer using 14 tools against the pre-extracted manual. A Safety Agent checks the response for dangerous configurations in parallel. A Quality Reviewer scores accuracy and clarity. The deliberation is visible in the expanded reasoning ribbon where the user can watch all three agents work, see tool parameters, read per-agent reasoning, and verify that three independent checks approved the response before it reached them. No other submission has multi-agent deliberation with the reasoning visible to the user.
 
-![Multi-agent deliberation flow](svg/multi-agent-flow.svg)
+![Multi-agent deliberation flow](svg/multi-agent-deliberation.svg)
 
 **6. Customer-ready packaging from day one.**
 Customer Mode toggle swaps developer metadata (cost, latency, tool calls, reasoning ribbon) for a clean customer-facing skin. Confidence scoring (high/medium/low) on every answer. LOW warns the user to verify against the manual. Graceful failure on out-of-domain questions. Thumbs up/down feedback. Nine-stop onboarding tour with focus-and-dim element highlighting. Multi-product dropdown in the header signaling platform-ready architecture. Artifact error boundaries so a single card crash never takes down the chat. I built this knowing Dima would need to show it to someone. Two skins, one click apart.

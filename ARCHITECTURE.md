@@ -231,7 +231,7 @@ A single-agent system is easier to ship but harder to trust. Every claim the age
 
 The hard part was preventing the reviewer agents from hallucinating issues on correct answers. Early versions of the Safety Agent kept flagging correct duty cycle numbers as inaccurate, and early versions of the Quality Reviewer kept scoring good responses low because they were short. The fix was to tighten both system prompts to explicitly defer to the Technical Specialist on facts and only flag genuine issues. After this fix, the deliberation layer approves well-formed responses cleanly and only raises flags on actual problems.
 
-![Multi-agent orchestration diagram](svg/multi-agent-architecture.svg)
+![Multi-agent orchestration diagram](svg/multi-agent-orchestration.svg)
 
 ## Artifact system
 
