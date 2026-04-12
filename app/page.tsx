@@ -814,6 +814,7 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const handsFreeRef = useRef(false);
+  const handleSubmitRef = useRef<(text?: string) => void>(() => {});
   const dragCounter = useRef(0);
 
   const voice = useVoiceInput();
@@ -867,20 +868,6 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("handsFree", String(handsFree));
     handsFreeRef.current = handsFree;
-
-    // Start listening immediately when hands-free is toggled ON
-    if (handsFree && !loading && !voice.isListening) {
-      console.log("[Hands-free] toggled ON — starting mic");
-      voice.startListening((text) => {
-        console.log("[Hands-free] initial speech received:", text);
-        handleSubmit(text);
-      });
-    }
-    // Stop listening when hands-free is toggled OFF
-    if (!handsFree && voice.isListening) {
-      console.log("[Hands-free] toggled OFF — stopping mic");
-      voice.stopListening();
-    }
   }, [handsFree]);
 
   // Persist guided mode toggle
@@ -1026,7 +1013,7 @@ export default function Home() {
         console.log("[Hands-free] mic restarting now");
         voice.startListening((text) => {
           console.log("[Hands-free] loop speech received:", text);
-          handleSubmit(text);
+          handleSubmitRef.current(text);
         });
       }, 500);
     }
@@ -1293,6 +1280,9 @@ export default function Home() {
       textareaRef.current?.focus();
     }
   }
+
+  // Keep ref in sync so callbacks always call latest handleSubmit
+  handleSubmitRef.current = handleSubmit;
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -1574,7 +1564,22 @@ export default function Home() {
                   showVoiceToast("Voice input not supported in this browser. Use Chrome or Safari.");
                   return;
                 }
-                setHandsFree((v) => !v);
+                setHandsFree((prev) => {
+                  const next = !prev;
+                  if (next) {
+                    console.log("[Hands-free] toggled ON — starting mic");
+                    setTimeout(() => {
+                      voice.startListening((text) => {
+                        console.log("[Hands-free] speech received:", text);
+                        handleSubmitRef.current(text);
+                      });
+                    }, 100);
+                  } else {
+                    console.log("[Hands-free] toggled OFF — stopping mic");
+                    voice.stopListening();
+                  }
+                  return next;
+                });
               }}
               data-tour-target="hands-free-toggle"
               className={`flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-mono transition-all ${
