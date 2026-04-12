@@ -383,6 +383,8 @@ Five things I'd change with another week of focused work. Naming them honestly i
 
 **5. Rebuild the knowledge graph page.** The /graph route exists and renders, but it's the weakest part of the app and I know it. The d3-force tuning is rough, the focus-and-dim interaction doesn't work the way I want it to, and there are no citation links from graph nodes back into chat. With another week I'd rebuild it as a proper visualization layer with hover-to-preview cards, click-to-query integration with the chat, and a smaller hand-curated subset of nodes that tells a clearer story than the current 3,225-line lib/graph-data.ts file. The current page ships because removing it would feel like quitting, but it's not what I want it to be.
 
+**6. Make multi-section cross-referencing deterministic.** Right now when a question requires pulling from multiple manual sections (e.g., "what polarity do I use for aluminum AND what duty cycle"), the agent handles it through multi-turn tool calls and Claude's choice to call multiple tools in sequence. This works in practice but is model-dependent, not deterministic. A future iteration would add an explicit cross-reference resolver that detects multi-topic queries and dispatches parallel structured lookups before the main response is generated.
+
 These are not gaps that hurt the demo. They are gaps that would hurt the second week of production use. Naming them is part of taking the work seriously.
 
 ## Dependencies

@@ -26,6 +26,8 @@ Open [omnipro.helloviks.com](https://omnipro.helloviks.com) and try these five t
 - **Drop a photo of the welder's front panel**, ask "label this". See numbered pins overlaid on every control with click-to-manual-page links.
 - **Toggle Customer Mode** in the header. Same agent, zero developer metadata, what a real Harbor Freight customer would see.
 
+Voice features (hands-free loop, mic input, TTS) require Chrome or Safari. The Web Speech API is not supported in Firefox.
+
 ## Why I built it this way
 
 Three decisions shaped everything else.
@@ -93,6 +95,14 @@ What happens on every query: user input flows through the Technical Specialist, 
 A deeper technical diagram including the multi-agent deliberation layer is included in ARCHITECTURE.md.
 
 Full architecture documentation in ARCHITECTURE.md.
+
+### A note on the Claude Agent SDK
+
+The challenge brief specifies the Claude Agent SDK as the foundation. This codebase uses @anthropic-ai/claude-agent-sdk for tool schema definitions in lib/tools.ts and lists it as a primary dependency. The agent execution loop in app/api/chat/route.ts uses @anthropic-ai/sdk directly with client.messages.create() in a hand-rolled while loop instead of the Agent SDK's built-in execution helpers.
+
+This was a deliberate engineering choice. The custom loop gave me the control I needed for three things the built-in helpers do not expose cleanly: SSE streaming with token-level granularity for the reasoning ribbon, the auto-emit pattern where six tools trigger artifact rendering without a second model turn, and parallel orchestration of the Safety and Quality reviewer agents via Promise.all after the main agent completes.
+
+If the reviewers prefer strict Agent SDK usage in the execution path, the loop in route.ts could be refactored to use the SDK's agent execution helpers in approximately one day of work. The current architecture works correctly and ships the features the brief asks for.
 
 ## What I learned about Prox while building this
 
