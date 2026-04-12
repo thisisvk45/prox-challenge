@@ -1,124 +1,143 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="500" viewBox="0 0 1400 500" style="background:#ffffff;font-family:'Inter',system-ui,sans-serif;">
   <defs>
     <filter id="shadow-sm" x="-10%" y="-10%" width="120%" height="140%">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0a0e27" flood-opacity="0.08"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0a0e27" flood-opacity="0.06"/>
     </filter>
     <filter id="shadow-md" x="-10%" y="-10%" width="130%" height="150%">
       <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#0a0e27" flood-opacity="0.12"/>
     </filter>
-    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-      <polygon points="0 0, 8 3, 0 6" fill="#d97757"/>
+    <!-- Main path arrowhead -->
+    <marker id="arr" markerWidth="9" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 9 3.5, 0 7" fill="#d97757"/>
+    </marker>
+    <!-- Small branch arrowhead -->
+    <marker id="arr-sm" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+      <polygon points="0 0, 6 2.5, 0 5" fill="#d97757"/>
     </marker>
   </defs>
 
-  <!-- Background -->
   <rect width="1400" height="500" fill="#ffffff"/>
 
-  <!-- TITLE SECTION -->
+  <!-- TITLE -->
   <text x="700" y="55" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="28" fill="#0a0e27">What happens on every query</text>
   <text x="700" y="85" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="14" font-style="italic" fill="#6a6a7a">End-to-end flow from user input to validated response</text>
 
-  <!-- ═══════════════════════════════════════════════════ -->
-  <!-- STAGE 1: USER INPUT -->
-  <!-- ═══════════════════════════════════════════════════ -->
-  <text x="140" y="130" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#d97757">Input</text>
-  <rect x="60" y="160" width="160" height="180" rx="12" fill="#ffffff" stroke="#0a0e27" stroke-width="1.5" filter="url(#shadow-sm)"/>
-  <text x="140" y="190" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="14" fill="#0a0e27">User Query</text>
-  <!-- Input icons: text, mic, camera -->
-  <!-- Text icon -->
-  <rect x="108" y="205" width="20" height="20" rx="3" fill="none" stroke="#d97757" stroke-width="1.5"/>
-  <line x1="112" y1="211" x2="124" y2="211" stroke="#d97757" stroke-width="1.5"/>
-  <line x1="112" y1="215" x2="124" y2="215" stroke="#d97757" stroke-width="1.5"/>
-  <line x1="112" y1="219" x2="120" y2="219" stroke="#d97757" stroke-width="1.5"/>
-  <!-- Mic icon -->
-  <rect x="130" y="207" width="8" height="12" rx="4" fill="none" stroke="#d97757" stroke-width="1.5"/>
-  <path d="M126 216 Q126 222 134 222 Q142 222 142 216" fill="none" stroke="#d97757" stroke-width="1.5"/>
-  <line x1="134" y1="222" x2="134" y2="225" stroke="#d97757" stroke-width="1.5"/>
-  <!-- Camera icon -->
-  <rect x="152" y="207" width="20" height="16" rx="3" fill="none" stroke="#d97757" stroke-width="1.5"/>
-  <circle cx="162" cy="215" r="4" fill="none" stroke="#d97757" stroke-width="1.5"/>
-  <rect x="159" y="206" width="6" height="3" rx="1" fill="#d97757"/>
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- STAGE 1: USER INPUT — de-emphasized             -->
+  <!-- ════════════════════════════════════════════════ -->
+  <text x="140" y="128" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="11" fill="#a0a0b0">Input</text>
+  <rect x="60" y="160" width="160" height="180" rx="12" fill="#ffffff" stroke="#d0d0dc" stroke-width="1" filter="url(#shadow-sm)"/>
+  <text x="140" y="190" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="13" fill="#5a5a70">User Query</text>
 
-  <line x1="80" y1="265" x2="220" y2="265" stroke="#e5e5e5" stroke-width="1"/>
-  <text x="140" y="286" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11" fill="#6a6a7a">context</text>
-  <text x="140" y="308" text-anchor="middle" font-family="'Courier New',monospace" font-size="10" fill="#9a9a9a">memory + history</text>
+  <!-- Icons: centers at x=113, 140, 167 — evenly spaced, no overlap -->
+  <!-- Text/doc icon (center x=113) -->
+  <rect x="103" y="205" width="20" height="20" rx="3" fill="none" stroke="#c0c0cc" stroke-width="1.2"/>
+  <line x1="107" y1="211" x2="119" y2="211" stroke="#c0c0cc" stroke-width="1.2"/>
+  <line x1="107" y1="215" x2="119" y2="215" stroke="#c0c0cc" stroke-width="1.2"/>
+  <line x1="107" y1="219" x2="115" y2="219" stroke="#c0c0cc" stroke-width="1.2"/>
+  <!-- Mic icon (center x=140) -->
+  <rect x="136" y="207" width="8" height="12" rx="4" fill="none" stroke="#c0c0cc" stroke-width="1.2"/>
+  <path d="M132 216 Q132 222 140 222 Q148 222 148 216" fill="none" stroke="#c0c0cc" stroke-width="1.2"/>
+  <line x1="140" y1="222" x2="140" y2="225" stroke="#c0c0cc" stroke-width="1.2"/>
+  <!-- Camera icon (center x=167) -->
+  <rect x="157" y="207" width="20" height="16" rx="3" fill="none" stroke="#c0c0cc" stroke-width="1.2"/>
+  <circle cx="167" cy="215" r="4" fill="none" stroke="#c0c0cc" stroke-width="1.2"/>
+  <rect x="164" y="206" width="6" height="3" rx="1" fill="#c0c0cc"/>
+
+  <line x1="80" y1="265" x2="220" y2="265" stroke="#efefef" stroke-width="1"/>
+  <text x="140" y="286" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#a0a0b0">context</text>
+  <text x="140" y="305" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#b8b8c8">memory + history</text>
 
   <!-- Arrow 1→2 -->
-  <line x1="220" y1="250" x2="316" y2="250" stroke="#d97757" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="220" y1="250" x2="314" y2="250" stroke="#d97757" stroke-width="3.5" marker-end="url(#arr)"/>
 
-  <!-- ═══════════════════════════════════════════════════ -->
-  <!-- STAGE 2: TECHNICAL SPECIALIST -->
-  <!-- ═══════════════════════════════════════════════════ -->
-  <text x="450" y="130" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#d97757">Phase 1: Technical Analysis</text>
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- STAGE 2: TECHNICAL SPECIALIST — PRIMARY         -->
+  <!-- ════════════════════════════════════════════════ -->
+  <text x="450" y="113" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#d97757">Phase 1: Technical Analysis</text>
+  <rect x="366" y="121" width="169" height="16" rx="8" fill="#fdf0e8"/>
+  <text x="450" y="133" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="9" fill="#c08060">Step 1: Technical Reasoning</text>
   <rect x="320" y="160" width="260" height="180" rx="12" fill="#fff8f5" stroke="#d97757" stroke-width="2" filter="url(#shadow-md)"/>
   <text x="450" y="190" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="14" fill="#0a0e27">Technical Specialist</text>
-  <text x="450" y="212" text-anchor="middle" font-family="'Courier New',monospace" font-size="10" fill="#d97757">claude-sonnet-4-5</text>
-  <line x1="340" y1="225" x2="560" y2="225" stroke="#e5e5e5" stroke-width="1"/>
-  <text x="450" y="248" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11" fill="#6a6a7a">calls 1–5 tools</text>
-  <text x="450" y="265" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11" fill="#6a6a7a">streams response</text>
-  <text x="450" y="282" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11" fill="#6a6a7a">emits artifacts</text>
+  <text x="450" y="210" text-anchor="middle" font-family="'Courier New',monospace" font-size="10" fill="#d97757">claude-sonnet-4-5</text>
+  <line x1="340" y1="222" x2="560" y2="222" stroke="#edd8cc" stroke-width="1"/>
+  <text x="450" y="262" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11" fill="#6a6a7a">tool calls + streaming + artifacts</text>
   <text x="450" y="322" text-anchor="middle" font-family="'Courier New',monospace" font-size="10" fill="#9a9a9a">8–30s · ~$0.04</text>
 
-  <!-- Arrow 2→3 -->
-  <line x1="580" y1="250" x2="676" y2="250" stroke="#d97757" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <text x="621" y="240" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" font-style="italic" fill="#6a6a7a">response text</text>
+  <!-- Arrow 2→fork point -->
+  <line x1="580" y1="250" x2="656" y2="250" stroke="#d97757" stroke-width="3.5" marker-end="url(#arr)"/>
+  <text x="618" y="238" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" font-style="italic" fill="#a0a0b0">response text</text>
 
-  <!-- ═══════════════════════════════════════════════════ -->
-  <!-- STAGE 3: PARALLEL REVIEWERS -->
-  <!-- ═══════════════════════════════════════════════════ -->
-  <text x="800" y="130" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#d97757">Phase 2 + 3: Parallel Validation</text>
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- STAGE 3: PARALLEL FORK/JOIN PATTERN             -->
+  <!-- ════════════════════════════════════════════════ -->
+  <text x="800" y="104" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#d97757">Phase 2 + 3: Parallel Validation</text>
+  <rect x="655" y="112" width="291" height="16" rx="8" fill="#fdf0e8"/>
+  <text x="800" y="124" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="9" fill="#c08060">Step 2: Validation (Safety + Quality)</text>
 
-  <!-- Box A: Safety Agent -->
-  <rect x="680" y="155" width="240" height="85" rx="10" fill="#ffffff" stroke="#0a0e27" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <!-- Fork dot -->
+  <circle cx="662" cy="250" r="5" fill="#d97757"/>
+  <!-- Fork vertical stem -->
+  <line x1="662" y1="197" x2="662" y2="297" stroke="#d97757" stroke-width="2"/>
+  <!-- Branch arrow → Safety Agent (center y=197) -->
+  <line x1="662" y1="197" x2="676" y2="197" stroke="#d97757" stroke-width="2" marker-end="url(#arr-sm)"/>
+  <!-- Branch arrow → Quality Reviewer (center y=297) -->
+  <line x1="662" y1="297" x2="676" y2="297" stroke="#d97757" stroke-width="2" marker-end="url(#arr-sm)"/>
+
+  <!-- Safety Agent box -->
+  <rect x="680" y="155" width="240" height="85" rx="10" fill="#ffffff" stroke="#b8b8c8" stroke-width="1.2" filter="url(#shadow-sm)"/>
   <text x="800" y="180" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#0a0e27">Safety Agent</text>
-  <text x="800" y="200" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#6a6a7a">dangerous configs, missing warnings</text>
-  <text x="800" y="222" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#9a9a9a">~1.5s · $0.01</text>
+  <text x="800" y="198" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#6a6a7a">dangerous configs, missing warnings</text>
+  <text x="800" y="222" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#b0b0b8">~1.5s · $0.01</text>
 
-  <!-- Box B: Quality Reviewer -->
-  <rect x="680" y="255" width="240" height="85" rx="10" fill="#ffffff" stroke="#0a0e27" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <!-- Quality Reviewer box -->
+  <rect x="680" y="255" width="240" height="85" rx="10" fill="#ffffff" stroke="#b8b8c8" stroke-width="1.2" filter="url(#shadow-sm)"/>
   <text x="800" y="280" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#0a0e27">Quality Reviewer</text>
-  <text x="800" y="300" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#6a6a7a">accuracy, clarity, completeness</text>
-  <text x="800" y="322" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#9a9a9a">~1.8s · $0.01</text>
+  <text x="800" y="298" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#6a6a7a">accuracy, clarity, completeness</text>
+  <text x="800" y="322" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#b0b0b8">~1.8s · $0.01</text>
 
-  <!-- Parallel pill -->
-  <rect x="905" y="240" width="50" height="18" rx="9" fill="#d97757"/>
-  <text x="930" y="253" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="9" fill="#ffffff">parallel</text>
+  <!-- Join lines from box right edges → join stem -->
+  <line x1="920" y1="197" x2="928" y2="197" stroke="#d97757" stroke-width="2"/>
+  <line x1="920" y1="297" x2="928" y2="297" stroke="#d97757" stroke-width="2"/>
+  <!-- Join vertical stem -->
+  <line x1="928" y1="197" x2="928" y2="297" stroke="#d97757" stroke-width="2"/>
+  <!-- Join dot -->
+  <circle cx="928" cy="250" r="5" fill="#d97757"/>
 
-  <!-- Arrow 3→4 -->
-  <line x1="958" y1="250" x2="1016" y2="250" stroke="#d97757" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <text x="980" y="240" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" font-style="italic" fill="#6a6a7a">verdicts</text>
+  <!-- Arrow join→Stage 4 -->
+  <line x1="928" y1="250" x2="1014" y2="250" stroke="#d97757" stroke-width="3.5" marker-end="url(#arr)"/>
+  <text x="968" y="238" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" font-style="italic" fill="#a0a0b0">verdicts</text>
 
-  <!-- ═══════════════════════════════════════════════════ -->
-  <!-- STAGE 4: SYNTHESIS -->
-  <!-- ═══════════════════════════════════════════════════ -->
-  <text x="1100" y="130" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#d97757">Synthesis</text>
-  <rect x="1020" y="160" width="160" height="180" rx="12" fill="#ffffff" stroke="#0a0e27" stroke-width="1.5" filter="url(#shadow-sm)"/>
-  <text x="1100" y="192" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="14" fill="#0a0e27">Merge</text>
-  <text x="1100" y="222" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#6a6a7a">prepend safety banner</text>
-  <text x="1100" y="238" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#6a6a7a">append quality footer</text>
-  <text x="1100" y="254" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#6a6a7a">log suggestions</text>
-  <text x="1100" y="297" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#9a9a9a">&lt;100ms</text>
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- STAGE 4: SYNTHESIS — de-emphasized              -->
+  <!-- ════════════════════════════════════════════════ -->
+  <text x="1100" y="128" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="11" fill="#a0a0b0">Synthesis</text>
+  <rect x="1020" y="160" width="160" height="180" rx="12" fill="#fafafa" stroke="#e2e2ea" stroke-width="1" filter="url(#shadow-sm)"/>
+  <text x="1100" y="192" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="600" font-size="12" fill="#8a8aaa">Merge</text>
+  <text x="1100" y="220" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#a0a0b0">prepend safety banner</text>
+  <text x="1100" y="236" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#a0a0b0">append quality footer</text>
+  <text x="1100" y="252" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#a0a0b0">log suggestions</text>
+  <text x="1100" y="295" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#b8b8c8">&lt;100ms</text>
 
   <!-- Arrow 4→5 -->
-  <line x1="1180" y1="250" x2="1276" y2="250" stroke="#d97757" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="1180" y1="250" x2="1274" y2="250" stroke="#d97757" stroke-width="3.5" marker-end="url(#arr)"/>
 
-  <!-- ═══════════════════════════════════════════════════ -->
-  <!-- STAGE 5: USER OUTPUT -->
-  <!-- ═══════════════════════════════════════════════════ -->
-  <text x="1330" y="130" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#d97757">Output</text>
-  <rect x="1280" y="160" width="100" height="180" rx="12" fill="#fafafa" stroke="#0a0e27" stroke-width="1.5" filter="url(#shadow-sm)"/>
-  <!-- Chat bubble icon -->
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- STAGE 5: USER OUTPUT                            -->
+  <!-- ════════════════════════════════════════════════ -->
+  <text x="1330" y="104" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" fill="#d97757">Output</text>
+  <rect x="1272" y="112" width="116" height="16" rx="8" fill="#fdf0e8"/>
+  <text x="1330" y="124" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="400" font-size="9" fill="#c08060">Step 3: Final Response</text>
+  <rect x="1280" y="160" width="100" height="180" rx="12" fill="#fff8f5" stroke="#d97757" stroke-width="2.5" filter="url(#shadow-md)"/>
   <path d="M1318 192 Q1318 185 1330 185 Q1342 185 1342 192 Q1342 199 1330 199 L1323 199 L1320 204 L1320 199 Q1318 199 1318 192 Z" fill="none" stroke="#d97757" stroke-width="1.5"/>
   <text x="1330" y="228" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="11" fill="#0a0e27">Final Response</text>
-  <text x="1330" y="250" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" fill="#6a6a7a">with warnings</text>
-  <text x="1330" y="266" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" font-style="italic" fill="#6a6a7a">if any</text>
+  <text x="1330" y="248" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" fill="#6a6a7a">with warnings</text>
+  <text x="1330" y="264" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" font-style="italic" fill="#6a6a7a">if any</text>
 
-  <!-- ═══════════════════════════════════════════════════ -->
   <!-- BOTTOM EXPLAINER -->
-  <!-- ═══════════════════════════════════════════════════ -->
   <line x1="40" y1="400" x2="1360" y2="400" stroke="#e5e5e5" stroke-width="1"/>
   <text x="700" y="428" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="12" fill="#6a6a7a">User sees a single response. Three independent agents have reviewed it. The deliberation is visible in the expanded reasoning ribbon.</text>
 
-  <!-- BOTTOM CREDIT -->
+  <!-- CREDIT -->
   <text x="700" y="475" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#9a9a9a">vikas kumar · prox founding engineer challenge</text>
 </svg>

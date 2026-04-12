@@ -10,7 +10,7 @@ Live demo: [omnipro.helloviks.com](https://omnipro.helloviks.com) · Author: [Vi
 
 ## What this is
 
-A person in a garage just bought a Vulcan OmniPro 220. They don't want to read 48 pages. They want to ask a question and get an answer they can act on, with their hands dirty, their torch in one hand, and no patience for "see page 14." This app is that answer. It's a voice-driven AI agent that pulls from structured knowledge, shows interactive diagrams, surfaces the exact manual page, and remembers your setup the next time you come back.
+A person in a garage just bought a Vulcan OmniPro 220. They don't want to read 48 pages. They want to ask a question and get an answer they can act on, mid-project, with no patience for "see page 14." This app is that answer. It's a voice-driven AI agent that pulls from structured knowledge, shows interactive diagrams, surfaces the exact manual page, and remembers your setup the next time you come back.
 
 The welder challenge is the right test for what Prox is building. It's not a Q&A bot over a PDF. The OmniPro 220 has four welding processes, dual voltage input, polarity configurations that damage the machine if reversed, duty cycle limits that vary by amperage and voltage, and a target user who doesn't know what DCEP means. Getting this right requires structured knowledge extraction, multimodal reasoning (photos + voice + diagrams), persistent memory, and the ability to handle a confused customer without making them feel stupid. That's the Prox product.
 
@@ -44,7 +44,7 @@ I built it as a product, not a demo. Customer Mode toggle, confidence scoring on
 Toggle Hands-free, ask a question by voice, hear the answer in Adam's voice via ElevenLabs, and the mic auto-listens for the next question. No clicking between turns. Most voice integrations handle input or output, not both wired into a closed loop. This matters because the user is wearing welding gloves. I built this first, not last.
 
 **2. Photo diagnosis with three layers of grounding.**
-Upload a weld photo. The agent runs a structured keyword matcher (porosity, spatter, undercut boosted at +200 priority), receives the manual's diagnosis chart as base64 image bytes in the tool result, and uses Claude's vision to compare the user's photo against specific examples in the chart. Output: "your weld matches the Wire Weld-Porosity example in the top-left of page 37." Most submissions have a structured matcher OR vision. This stacks both. That's the level of multimodal grounding Prox needs to make customers trust the agent. Three layers because one is brittle. Two is correct. Three is correct AND verifiable.
+Upload a weld photo. The agent runs a structured keyword matcher (porosity, spatter, undercut boosted at +200 priority), receives the manual's diagnosis chart as base64 image bytes in the tool result, and uses Claude's vision to compare the user's photo against specific examples in the chart. Output: "your weld matches the Wire Weld-Porosity example in the top-left of page 37." Most submissions have a structured matcher OR vision. This stacks both. This level of multimodal grounding is important for building trust. Three layers because one is brittle. Two is correct. Three is correct AND verifiable.
 
 ![Weld diagnosis showing porosity matched at 95% confidence with manual chart position reference](screenshots/weld-diagnosis-porosity.png)
 
@@ -96,11 +96,11 @@ Full architecture documentation in ARCHITECTURE.md.
 
 ## What I learned about Prox while building this
 
-The product isn't a chatbot. It's customer empathy at scale. The OmniPro 220 manual is 48 pages of dense technical content. Nobody reads 48 pages. The challenge isn't extraction or retrieval. It's reducing cognitive load on someone who already feels stupid asking a basic question. Every design decision in this app was filtered through "would a frustrated garage hobbyist forgive this response?" That filter is what made me build voice-first, photo-first, and personalized-first instead of search-first.
+The product isn't a chatbot. It's customer empathy at scale. Nobody reads 48 pages. The challenge is reducing cognitive load on someone who already feels stupid asking a basic question. Every design decision was filtered through "would a frustrated garage hobbyist forgive this response?" That filter drove voice-first, photo-first, and personalized-first over search-first.
 
-The hard problem is being right when the user is wrong. A user who reverses polarity for MIG can damage their machine. A confident wrong answer is worse than no answer. That's why I built structured lookups instead of RAG, confidence scoring on every response, graceful failure handling, and "common mistakes" callouts inside guided walkthroughs. The agent has to know when it's confident and when it's not, and communicate that without sounding evasive.
+The hard problem is being right when the user is wrong. Reversed polarity damages the machine. A confident wrong answer is worse than no answer. That's why I built structured lookups, confidence scoring, and "common mistakes" callouts. The agent has to know when it's confident and when it's not.
 
-The architecture is product-agnostic on purpose. Nothing in the agent loop or artifact system is hardcoded to welders. The same code works for any product with a manual, an audience, and safety-critical settings. I built it that way because Prox isn't selling welder support. They're selling a platform. The Vulcan OmniPro 220 is one instance of the pattern.
+The architecture is product-agnostic on purpose. Nothing is hardcoded to welders. The same code works for any product with a manual, an audience, and safety-critical settings. Prox isn't selling welder support. They're selling a platform.
 
 ## What I'd build week one
 
