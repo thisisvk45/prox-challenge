@@ -82,6 +82,8 @@ Four capabilities I deliberately left out of scope:
 
 **Live camera feed for real-time weld coaching.** I considered building a getUserMedia pipeline that samples frames while the user is welding and coaches them live. I rejected it because pointing a phone camera at an active welding arc is dangerous (arc light damages camera sensors and encourages users to look at screens instead of through their helmet), because the feature can't be demoed without an actual weld setup, and because the cost and latency story breaks at multiple frames per second. The idea becomes safe and correct as an iterative post-weld coaching mode built on top of the existing photo diagnosis pipeline, which is future work.
 
+**Polish on the knowledge graph visualization.** The /graph page works and the underlying data is correct, but the visualization itself is rougher than the rest of the app. I deliberately prioritized polish on features a welder user actually touches (chat, voice, photo diagnosis, walkthroughs) over a secondary exploration tool. The graph is functional, not decorative. Week-one priority if the team wants to make it a highlighted feature.
+
 These are not gaps in the submission. They are deliberate constraints chosen because shipping less but right beats shipping more but fragile.
 
 ## Architecture at a glance

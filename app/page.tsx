@@ -12,7 +12,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { ReasoningRibbon } from "@/components/chat/ReasoningRibbon";
 import { MessageStats, type Stats } from "@/components/chat/MessageStats";
 import { Badge } from "@/components/ui/badge";
-import { Send, Mic, Square, Volume2, VolumeX, Headphones, ImagePlus, X as XIcon, Menu, Plus, Trash2, ListChecks, BookOpen, Brain, Compass, ThumbsUp, ThumbsDown, Briefcase, RefreshCw, ChevronDown } from "lucide-react";
+import { Send, Mic, Square, Volume2, VolumeX, Headphones, ImagePlus, X as XIcon, Menu, Plus, Trash2, ListChecks, BookOpen, Brain, Compass, ThumbsUp, ThumbsDown, Briefcase, RefreshCw, ChevronDown, AlertCircle } from "lucide-react";
 import { splitTextWithCitations } from "@/lib/citation-parser";
 import { CitationLink } from "@/components/CitationLink";
 import { SourcePageViewer } from "@/components/SourcePageViewer";
@@ -227,7 +227,7 @@ function processChildren(
 
 // --- TTS Speaker button ---
 
-function SpeakerButton({ blocks }: { blocks: ContentBlock[] }) {
+function SpeakerButton({ blocks, onVoiceError }: { blocks: ContentBlock[]; onVoiceError?: () => void }) {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const urlRef = useRef<string | null>(null);
@@ -253,7 +253,9 @@ function SpeakerButton({ blocks }: { blocks: ContentBlock[] }) {
         body: JSON.stringify({ text }),
       });
       if (!res.ok) {
+        console.error("[TTS] voice service error:", res.status);
         setPlaying(false);
+        onVoiceError?.();
         return;
       }
       const blob = await res.blob();
@@ -267,8 +269,10 @@ function SpeakerButton({ blocks }: { blocks: ContentBlock[] }) {
         urlRef.current = null;
       };
       audio.play();
-    } catch {
+    } catch (err) {
+      console.error("[TTS] fetch failed:", err);
       setPlaying(false);
+      onVoiceError?.();
     }
   };
 
@@ -460,6 +464,7 @@ function MessageBubble({
   onCitationClick,
   onSendMessage,
   customerMode,
+  onVoiceError,
 }: {
   message: Message;
   isStreaming: boolean;
@@ -468,6 +473,7 @@ function MessageBubble({
   onCitationClick?: (page: number) => void;
   onSendMessage?: (msg: string) => void;
   customerMode?: boolean;
+  onVoiceError?: () => void;
 }) {
   const hasAutoSpoken = useRef(false);
 
@@ -516,6 +522,8 @@ function MessageBubble({
             body: JSON.stringify({ text }),
           });
           if (!res.ok) {
+            console.error("[TTS] voice service error in autoSpeak:", res.status);
+            onVoiceError?.();
             onTTSComplete?.();
             return;
           }
@@ -531,7 +539,9 @@ function MessageBubble({
             onTTSComplete?.();
           };
           audio.play();
-        } catch {
+        } catch (err) {
+          console.error("[TTS] autoSpeak fetch failed:", err);
+          onVoiceError?.();
           onTTSComplete?.();
         }
       })();
@@ -576,7 +586,7 @@ function MessageBubble({
         <div className="flex items-center gap-3 mt-1 flex-wrap">
           {message.stats && !customerMode && <MessageStats stats={message.stats} />}
           {message.confidence && <ConfidenceBadge level={message.confidence} customerMode={customerMode} />}
-          {!customerMode && <SpeakerButton blocks={blocks} />}
+          {!customerMode && <SpeakerButton blocks={blocks} onVoiceError={onVoiceError} />}
           {message.id && <FeedbackButtons messageId={message.id} />}
         </div>
       )}
@@ -596,8 +606,12 @@ function useVoiceInput() {
 
   // Check support once
   useEffect(() => {
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) setSupported(false);
+    try {
+      const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (!SR) setSupported(false);
+    } catch {
+      setSupported(false);
+    }
   }, []);
 
   const startListening = useCallback((onResult: (text: string) => void) => {
@@ -791,6 +805,8 @@ export default function Home() {
   const [memoryPopoverOpen, setMemoryPopoverOpen] = useState(false);
   const [customerMode, setCustomerMode] = useState(false);
   const [streamError, setStreamError] = useState(false);
+  const [voiceToast, setVoiceToast] = useState<string | null>(null);
+  const voiceToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastUserMsgRef = useRef<string>("");
   const memoryPopoverRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -801,6 +817,12 @@ export default function Home() {
   const dragCounter = useRef(0);
 
   const voice = useVoiceInput();
+
+  const showVoiceToast = useCallback((msg: string) => {
+    if (voiceToastTimer.current) clearTimeout(voiceToastTimer.current);
+    setVoiceToast(msg);
+    voiceToastTimer.current = setTimeout(() => setVoiceToast(null), 5000);
+  }, []);
 
   // Load chat history on mount
   useEffect(() => {
@@ -970,6 +992,12 @@ export default function Home() {
       ta.style.height = Math.min(ta.scrollHeight, 160) + "px";
     }
   }, [input]);
+
+  // Voice error: show toast, disable hands-free
+  const handleVoiceError = useCallback(() => {
+    showVoiceToast("Voice unavailable. Switched to text mode.");
+    setHandsFree(false);
+  }, [showVoiceToast]);
 
   // Hands-free: auto-start mic after TTS finishes
   const handleTTSComplete = useCallback(() => {
@@ -1519,7 +1547,13 @@ export default function Home() {
 
             {/* Hands-free toggle */}
             <button
-              onClick={() => setHandsFree((v) => !v)}
+              onClick={() => {
+                if (!voice.supported) {
+                  showVoiceToast("Voice input not supported in this browser. Use Chrome or Safari.");
+                  return;
+                }
+                setHandsFree((v) => !v);
+              }}
               data-tour-target="hands-free-toggle"
               className={`flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-mono transition-all ${
                 handsFree
@@ -1661,6 +1695,7 @@ export default function Home() {
                   onCitationClick={openSourceViewer}
                   onSendMessage={(msg) => handleSubmit(msg)}
                   customerMode={customerMode}
+                  onVoiceError={handleVoiceError}
                 />
               );
             })}
@@ -1797,6 +1832,22 @@ export default function Home() {
         on_close={closeSourceViewer}
         on_send_message={(text) => handleSubmit(text)}
       />
+
+      {/* Voice toast */}
+      {voiceToast && (
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 shadow-lg">
+            <AlertCircle size={16} className="shrink-0 text-amber-500" />
+            <span className="text-sm text-foreground">{voiceToast}</span>
+            <button
+              onClick={() => setVoiceToast(null)}
+              className="ml-2 shrink-0 text-muted-foreground hover:text-foreground"
+            >
+              <XIcon size={14} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
