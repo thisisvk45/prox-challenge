@@ -30,6 +30,24 @@ type ReasoningStep = {
   duration_ms: number;
 };
 
+type AgentPhase = {
+  phase: "safety_review" | "quality_review";
+  status: "running" | "complete";
+  result?: {
+    // Safety fields
+    safe?: boolean;
+    warnings?: string[];
+    critical_issues?: string[];
+    // Quality fields
+    approved?: boolean;
+    accuracy_score?: number;
+    clarity_score?: number;
+    suggestion?: string | null;
+    // Common
+    duration_ms?: number;
+  };
+};
+
 type ContentBlock =
   | { type: "text"; text: string }
   | { type: "artifact"; artifact: ArtifactPayload }
@@ -42,6 +60,7 @@ type Message = {
   blocks?: ContentBlock[];
   toolCalls?: { name: string; input: Record<string, unknown>; reasoning?: string }[];
   reasoningSteps?: ReasoningStep[];
+  agentPhases?: AgentPhase[];
   elapsedMs?: number;
   stats?: Stats;
   cost?: number;
@@ -525,12 +544,14 @@ function MessageBubble({
         <span className="text-[11px] font-mono text-muted-foreground">Prox</span>
       </div>
 
-      {toolCalls.length > 0 && !customerMode && (
+      {toolCalls.length > 0 && (
         <ReasoningRibbon
           toolCalls={toolCalls}
           reasoningSteps={message.reasoningSteps || []}
+          agentPhases={message.agentPhases || []}
           isStreaming={isStreaming}
           elapsedMs={message.elapsedMs || 0}
+          customerMode={customerMode}
         />
       )}
 
@@ -1081,6 +1102,7 @@ export default function Home() {
       let artifactBlocks: { type: "artifact"; artifact: ArtifactPayload }[] = [];
       let toolCalls: { name: string; input: Record<string, unknown>; reasoning?: string }[] = [];
       let reasoningSteps: ReasoningStep[] = [];
+      let agentPhases: AgentPhase[] = [];
       let cost: number | undefined;
       let turns: number | undefined;
       let stats: Stats | undefined;
@@ -1130,6 +1152,15 @@ export default function Home() {
               reasoning: matchingToolCall?.reasoning || data.reasoning,
               duration_ms: data.duration_ms || 0,
             }];
+          } else if (eventType === "agent_phase") {
+            const existing = agentPhases.findIndex(p => p.phase === data.phase);
+            const phase: AgentPhase = { phase: data.phase, status: data.status, result: data.result };
+            if (existing >= 0) {
+              agentPhases = [...agentPhases];
+              agentPhases[existing] = phase;
+            } else {
+              agentPhases = [...agentPhases, phase];
+            }
           } else if (eventType === "artifact" && data.artifact_type) {
             // Deduplicate: skip if we already have this artifact type
             const dedupTypes = ["weld_diagnosis_result", "machine_photo_annotation", "guided_walkthrough", "video_recommendation"];
@@ -1182,6 +1213,7 @@ export default function Home() {
               blocks: [...textBlocks, ...artifactBlocks],
               toolCalls,
               reasoningSteps,
+              agentPhases,
               elapsedMs,
               stats,
               cost,

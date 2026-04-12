@@ -9,6 +9,7 @@ import { WeldDiagnosisResult } from "./artifacts/WeldDiagnosisResult";
 import { MachinePhotoAnnotation } from "./artifacts/MachinePhotoAnnotation";
 import { GuidedWalkthrough } from "./artifacts/GuidedWalkthrough";
 import { VideoRecommendation } from "./artifacts/VideoRecommendation";
+import { SafetyWarning } from "./artifacts/SafetyWarning";
 import { Badge } from "./ui/badge";
 
 export type ArtifactPayload = {
@@ -107,6 +108,14 @@ export function ArtifactRenderer({ artifact, onCitationClick, onSendMessage }: {
         <VideoRecommendation
           videos={(data.videos as any[]) || []}
           context_topic={(data.context_topic as string) || (data.query as string) || ""}
+        />
+      );
+
+    case "safety_warning":
+      return (
+        <SafetyWarning
+          level={(data.level as "critical" | "caution") || "caution"}
+          issues={(data.issues as string[]) || []}
         />
       );
 
