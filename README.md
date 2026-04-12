@@ -1,6 +1,6 @@
 ![OmniPro Support](svg/omnipro_support_banner.svg)
 
-A multimodal voice agent for the Vulcan OmniPro 220, built in one week for the Prox Founding Engineer Challenge.
+A multimodal voice agent for the Vulcan OmniPro 220, built in 49 hours for the Prox Founding Engineer Challenge.
 
 Live demo: [omnipro.helloviks.com](https://omnipro.helloviks.com) · Author: [Vikas Kumar](https://helloviks.com) · Winston-Salem, NC · open to relocating to SF
 
