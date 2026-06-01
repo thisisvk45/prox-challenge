@@ -4,6 +4,8 @@ A multimodal voice agent for the Vulcan OmniPro 220, built in 49 hours for the P
 
 Live demo: [omnipro.helloviks.com](https://omnipro.helloviks.com) · Author: [Vikas Kumar](https://helloviks.com) · Winston-Salem, NC · open to relocating to SF
 
+**Video walkthrough:** https://www.youtube.com/watch?v=miVnOCafTJU
+
 **This is not a RAG problem. It's a product and safety problem.** A welder user with dirty hands and a torch in the other hand doesn't want a chatbot. They want a colleague who knows the machine, remembers their setup, can look at their weld and diagnose it, and won't quietly give them an answer that damages their equipment. That's what I built.
 
 ---
